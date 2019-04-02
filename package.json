@@ -1,7 +1,7 @@
 {
   "name": "mastercard-client-encryption",
   "version": "1.1.0",
-  "description": "Library for Mastercard API compliant payload encryption/decryption.\n",
+  "description": "Library for Mastercard API compliant payload encryption/decryption.",
   "main": "index.js",
   "engines": {
     "node": ">=6.12.3"
@@ -38,13 +38,6 @@
     "eslint-plugin-mocha": "^5.3.0",
     "mocha-sonar-generic-test-coverage": "0.0.6",
     "nyc": "^13.2.0",
-    "lint-staged": "^8.1.5",
-    "supertest": "^4.0.0",
-    "express": "^4.16.4",
-    "request": "^2.88.0",
-    "connect": "^3.2.0",
-    "swagger-tools": "0.10.1",
-    "mastercard-oauth1-signer": "^1.0.1",
     "rewire": "^4.0.1"
   },
   "publishConfig": {
