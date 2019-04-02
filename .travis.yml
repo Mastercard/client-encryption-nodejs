@@ -4,9 +4,6 @@ git:
 matrix:
   fast_finish: true
   include:
-    - node_js: 6.12.3
-    - node_js: 6
-    - node_js: 7
     - node_js: 8
     - node_js: 9
     - node_js: 10
