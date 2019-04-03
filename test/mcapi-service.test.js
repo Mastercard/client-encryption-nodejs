@@ -33,7 +33,7 @@ describe("MC API Service", () => {
         ApiClient: {
           instance: {
             callApi: function () {
-              arguments[arguments.length - 1](null, arguments[7]);
+              arguments[arguments.length - 1](null, arguments[7], {body: arguments[7], request: {url: "/resource"}});
             }
           }
         }
