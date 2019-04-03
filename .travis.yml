@@ -32,7 +32,7 @@ after_success:
       -Dsonar.projectName=$SONAR_PROJECT_NAME \
       -Dsonar.projectKey=$SONAR_PROJECT_KEY \
       -Dsonar.organization=$SONAR_ORGANIZATION_KEY \
-      -Dsonar.sources=./src \
+      -Dsonar.sources=./lib \
       -Dsonar.tests=./test \
       -Dsonar.testExecutionReportPaths=test-results.xml \
       -Dsonar.javascript.lcov.reportPaths=.nyc_output/coverage.lcov \
