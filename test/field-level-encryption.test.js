@@ -105,6 +105,20 @@ describe("Field Level Encryption", () => {
       assert.ok(res.body.encrypted_payload.data.length > "5123456789012345".length);
     });
 
+    it("encrypt when config not found", () => {
+
+      let body = {
+        elem1: {
+          encryptedData: {
+            accountNumber: "5123456789012345"
+          }
+        }
+      };
+      let res = encrypt.call(fle, "/not-exists", null, body);
+      assert.ok(res.header === null);
+      assert.ok(JSON.stringify(res.body) === JSON.stringify(body));
+    });
+
   });
 
   describe("#decrypt", () => {
@@ -117,6 +131,16 @@ describe("Field Level Encryption", () => {
       assert.ok(res.elem1.encryptedData.accountNumber === "5123456789012345");
     });
 
+    it("decrypt response replacing whole body", () => {
+      let config = JSON.parse(JSON.stringify(testConfig));
+      config.paths[0].toDecrypt[0].obj = "";
+      config.paths[0].toDecrypt[0].element = "encryptedData";
+      let fle = new FieldLevelEncryption(config);
+      let response = require("./mock/response-root");
+      let res = decrypt.call(fle, response);
+      assert.ok(res.encryptedData.accountNumber === "5123456789012345");
+    });
+
     it("decrypt with header", () => {
       let response = require("./mock/response-header");
       let headerConfig = require("./mock/config-header");
@@ -124,6 +148,17 @@ describe("Field Level Encryption", () => {
       let decrypt = FieldLevelEncryption.__get__("decrypt");
       let res = decrypt.call(fle, response);
       assert.ok(res.accountNumber === "5123456789012345");
+    });
+
+    it("decrypt with header when node not found in body", () => {
+      let response = require("./mock/response-header");
+      let headerConfig = require("./mock/config-header");
+      let fle = new FieldLevelEncryption(headerConfig);
+      let decrypt = FieldLevelEncryption.__get__("decrypt");
+      delete response.body.encrypted_payload;
+      response.body = {test: "foo"};
+      let res = decrypt.call(fle, response);
+      assert.ok(JSON.stringify(res) === JSON.stringify({test: "foo"}));
     });
 
     it("decrypt without config", () => {
