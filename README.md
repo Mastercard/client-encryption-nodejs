@@ -217,7 +217,7 @@ Output:
 [OpenAPI Generator](https://github.com/OpenAPITools/openapi-generator) generates API client libraries from [OpenAPI Specs](https://github.com/OAI/OpenAPI-Specification). 
 It provides generators and library templates for supporting multiple languages and frameworks.
 
-The **client-encryption-nodejs** library provides you the `Service` decorator object you can use with the OpenAPI generated client. This class will take care of encrypting request and decrypting response payloads, but also of updating HTTP headers when needed, automatically, without calling `encrypt()`/`decrypt()` functions.
+The **client-encryption-nodejs** library provides the `Service` decorator object you can use with the OpenAPI generated client. This class will take care of encrypting request and decrypting response payloads, but also of updating HTTP headers when needed, automatically, without manually calling `encrypt()`/`decrypt()` functions for each API request or response.
 
 ##### OpenAPI Generator <a name="openapi-generator"></a>
 
