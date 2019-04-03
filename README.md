@@ -22,7 +22,7 @@ NodeJS library for Mastercard API compliant payload encryption/decryption.
 
 ### Compatibility <a name="compatibility"></a>
 
-NodeJS 8+
+NodeJS 6.12.3+
 
 There shouldn't be any Node compatibility issues with this package, but it's a good idea to keep your Node versions up-to-date. It is recommended that you use one of the LTS Node.js releases, or one of the more general recent releases. A Node version manager such as nvm (Mac and Linux) or nvm-windows is a good way to stay on top of this.
 
@@ -122,11 +122,11 @@ const config = {
 
 For all config options, please see:
 
-- [Configuration object](https://github.com/Mastercard/client-encryption-nodejs/wiki/C%23-Configurations) for all config options
+- [Configuration object](https://github.com/Mastercard/client-encryption-nodejs/wiki/Configuration-Object) for all config options
 
 We have a predefined set of configurations to use with Mastercard services:
 
-- [Service configurations](https://github.com/Mastercard/client-encryption-nodejs/wiki/C%23-Service-Configurations) wiki page
+- [Service configurations](https://github.com/Mastercard/client-encryption-nodejs/wiki/Mastercard-Services-Configuration) wiki page
 
 #### Performing Encryption <a name="performing-encryption"></a>
 
