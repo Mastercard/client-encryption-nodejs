@@ -9,16 +9,16 @@ describe("MC API Service", () => {
     it("when null", () => {
       assert.throws(() => {
         new MCService(null, testConfig);
-      }, Error("service should be a valid OpenAPI client."));
+      }, /service should be a valid OpenAPI client./);
     });
 
     it("with not right openapi client", () => {
       assert.throws(() => {
         new MCService({}, testConfig);
-      }, Error("service should be a valid OpenAPI client."));
+      }, /service should be a valid OpenAPI client./);
       assert.throws(() => {
         new MCService({ApiClient: {}}, testConfig);
-      }, Error("service should be a valid OpenAPI client."));
+      }, /service should be a valid OpenAPI client./);
     });
 
     it("callApi intercepted", function (done) {

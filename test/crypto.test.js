@@ -14,13 +14,13 @@ describe("Crypto", () => {
   describe("#new Crypto", () => {
     it("with empty config", () => {
       assert.throws(() =>
-        new Crypto({}), Error("Config not valid: paths should be an array of path element.")
+        new Crypto({}), /Config not valid: paths should be an array of path element./
       );
     });
 
     it("with string config", () => {
       assert.throws(() =>
-        new Crypto(""), Error("Config not valid: config should be an object.")
+        new Crypto(""), /Config not valid: config should be an object./
       );
     });
 
@@ -28,7 +28,7 @@ describe("Crypto", () => {
       let config = JSON.parse(JSON.stringify(testConfig));
       config["dataEncoding"] = "foo";
       assert.throws(() =>
-        new Crypto(config), Error("Config not valid: dataEncoding should be 'hex' or 'base64'")
+        new Crypto(config), /Config not valid: dataEncoding should be 'hex' or 'base64'/
       );
     });
 
@@ -36,7 +36,7 @@ describe("Crypto", () => {
       let config = JSON.parse(JSON.stringify(testConfig));
       delete config["ivFieldName"];
       assert.throws(() =>
-        new Crypto(config), Error("Config not valid: please check that all the properties are defined.")
+        new Crypto(config), /Config not valid: please check that all the properties are defined./
       );
     });
 
@@ -44,7 +44,7 @@ describe("Crypto", () => {
       let config = JSON.parse(JSON.stringify(testConfig));
       config.paths = [];
       assert.throws(() =>
-        new Crypto(config), Error("Config not valid: paths should be not empty.")
+        new Crypto(config), /Config not valid: paths should be not empty./
       );
     });
 
@@ -77,7 +77,7 @@ describe("Crypto", () => {
       let config = JSON.parse(JSON.stringify(testConfigHeader));
       delete config["ivHeaderName"];
       assert.throws(() =>
-        new Crypto(config), Error("Config not valid: please check that all the properties are defined.")
+        new Crypto(config), /Config not valid: please check that all the properties are defined./
       );
     });
   });
@@ -91,7 +91,7 @@ describe("Crypto", () => {
     it("with empty string", () => {
       assert.throws(() => {
         crypto.encryptData({data: ""});
-      }, Error("Json not valid"));
+      }, /Json not valid/);
     });
 
     it("with valid object, iv and secretKey", () => {
@@ -127,13 +127,13 @@ describe("Crypto", () => {
     it("with null", () => {
       assert.throws(() => {
         crypto.decryptData(null);
-      }, Error("Input not valid"));
+      }, /Input not valid/);
     });
 
     it("with empty string", () => {
       assert.throws(() => {
         crypto.decryptData("");
-      }, Error("Input not valid"));
+      }, /Input not valid/);
     });
 
     it("with valid object", () => {
@@ -149,7 +149,7 @@ describe("Crypto", () => {
       let generateSecretKey = Crypto.__get__("generateSecretKey");
       assert.throws(() => {
         generateSecretKey("ABC");
-      }, Error("Unsupported symmetric algorithm"));
+      }, /Unsupported symmetric algorithm/);
     });
   });
 
@@ -158,7 +158,7 @@ describe("Crypto", () => {
       let loadPrivateKey = Crypto.__get__("loadPrivateKey");
       assert.throws(() => {
         loadPrivateKey("./test/res/empty.key");
-      }, Error("Private key content not valid"));
+      }, /Private key content not valid/);
     });
   });
 
@@ -167,7 +167,7 @@ describe("Crypto", () => {
       let readPublicCertificate = Crypto.__get__("readPublicCertificate");
       assert.throws(() => {
         readPublicCertificate("./test/res/empty.key");
-      }, Error("Public certificate content is not valid"));
+      }, /Public certificate content is not valid/);
     });
   });
 
@@ -177,19 +177,19 @@ describe("Crypto", () => {
     it("not valid key", () => {
       assert.throws(() => {
         getPrivateKey("./test/res/empty.key");
-      }, Error("p12 keystore content is empty"));
+      }, /p12 keystore content is empty/);
     });
 
     it("empty alias", () => {
       assert.throws(() => {
         getPrivateKey("./test/res/test_key_container.p12");
-      }, Error("Key alias is not set"));
+      }, /Key alias is not set/);
     });
 
     it("empty password", () => {
       assert.throws(() => {
         getPrivateKey("./test/res/test_key_container.p12", "keyalias");
-      }, Error("Keystore password is not set"));
+      }, /Keystore password is not set/);
     });
 
     it("valid p12", () => {
@@ -200,7 +200,7 @@ describe("Crypto", () => {
     it("valid p12, alias not found", () => {
       assert.throws(() => {
         getPrivateKey("./test/res/test_key_container.p12", "mykeyalias1", "Password1");
-      }, Error("No key found for alias [mykeyalias1]"));
+      }, /No key found for alias \[mykeyalias1\]/);
     });
   });
 
