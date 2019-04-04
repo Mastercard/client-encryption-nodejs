@@ -65,9 +65,6 @@ const clientEncryption = require('mastercard-client-encryption');
 - [Configuring the Field Level Encryption](#configuring-the-field-level-encryption)
 - [Performing Encryption](#performing-encryption)
 - [Performing Decryption](#performing-decryption)
-- [Encrypting Entire Payloads](#encrypting-entire-payloads)
-- [Decrypting Entire Payloads](#decrypting-entire-payloads)
-- [Using HTTP Headers for Encryption Params](#using-http-headers-for-encryption-params)
 
 #### Introduction <a name="introduction"></a>
 
