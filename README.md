@@ -71,7 +71,7 @@ const clientEncryption = require('mastercard-client-encryption');
 
 #### Introduction <a name="introduction"></a>
 
-The methods that do all the heavy lifting are `encryptData` and `decryptData` in the `Crypto` class.
+The core methods responsible for payload encryption and decryption are `encryptData` and `decryptData` in the `FieldLevelEncryption` class.
 
 - `encrypt()` usage:
 
