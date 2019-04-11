@@ -35,6 +35,7 @@ module.exports = {
   encryptedValueFieldName: 'encryptedData',
   oaepHashingAlgorithmFieldName: 'oaepHashingAlgorithm',
   publicKeyFingerprintFieldName: 'publicKeyFingerprint',
+  publicKeyFingerprintType: 'certificate',
   dataEncoding: 'hex',
   encryptionCertificate: "./test/res/test_certificate.cert",
   privateKey: "./test/res/test_key.der"

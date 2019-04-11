@@ -21,6 +21,7 @@ module.exports = {
   encryptedKeyHeaderName: 'x-encrypted-key',
   oaepHashingAlgorithmHeaderName: 'x-oaep-hashing-algorithm',
   publicKeyFingerprintHeaderName: 'x-public-key-fingerprint',
+  publicKeyFingerprintType: 'certificate',
   encryptedValueFieldName: 'data',
   dataEncoding: 'hex',
   encryptionCertificate: "./test/res/test_certificate.cert",

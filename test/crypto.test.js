@@ -54,14 +54,13 @@ describe("Crypto", () => {
       );
     });
 
-
     it("with valid config with private keystore", () => {
+      let config = JSON.parse(JSON.stringify(testConfig));
+      delete config.privateKey;
+      config.keyStore = "./test/res/test_key.p12";
+      config.keyStoreAlias = "mykeyalias";
+      config.keyStorePassword = "Password1";
       assert.doesNotThrow(() => {
-          let config = JSON.parse(JSON.stringify(testConfig));
-          delete config.privateKey;
-          config.keyStore = "./test/res/test_key.p12";
-          config.keyStoreAlias = "mykeyalias";
-          config.keyStorePassword = "Password1";
           new Crypto(config);
         }
       );
@@ -80,6 +79,45 @@ describe("Crypto", () => {
         new Crypto(config), /Config not valid: please check that all the properties are defined./
       );
     });
+
+    it("without publicKeyFingerprintType", () => {
+      let config = JSON.parse(JSON.stringify(testConfig));
+      delete config["publicKeyFingerprintType"];
+      assert.throws(() => new Crypto(config), /Config not valid: propertiesFingerprint should be: 'certificate' or 'publicKey'/);
+    });
+
+    it("without publicKeyFingerprintType, but providing the publicKeyFingerprint", () => {
+      let config = JSON.parse(JSON.stringify(testConfig));
+      delete config["publicKeyFingerprintType"];
+      config.publicKeyFingerprint = "abc";
+      assert.ok(new Crypto(config).publicKeyFingerprint = "abc");
+    });
+
+    it("with wrong publicKeyFingerprintType", () => {
+      let config = JSON.parse(JSON.stringify(testConfig));
+      config.publicKeyFingerprintType = "foobar";
+      assert.throws(() => new Crypto(config), /Config not valid: propertiesFingerprint should be: 'certificate' or 'publicKey'/);
+    });
+
+    it("with right publicKeyFingerprintType: certificate", () => {
+      let config = JSON.parse(JSON.stringify(testConfig));
+      config.publicKeyFingerprintType = "certificate";
+      assert.doesNotThrow(() => new Crypto(config));
+    });
+
+    it("with right publicKeyFingerprintType: publicKey", () => {
+      let config = JSON.parse(JSON.stringify(testConfig));
+      config.publicKeyFingerprintType = "publicKey";
+      assert.doesNotThrow(() => new Crypto(config));
+    });
+
+    it("without keyStore and privateKey", () => {
+      let config = JSON.parse(JSON.stringify(testConfig));
+      delete config["privateKey"];
+      delete config["keyStore"];
+      assert.doesNotThrow(() => new Crypto(config));
+    });
+
   });
 
   describe("#encryptData()", () => {
@@ -103,6 +141,17 @@ describe("Crypto", () => {
       });
       assert.ok(resp.encryptedData === "3590b63d1520a57bd4cd1414a7a75f47d65f99e1427d6cfe744d72ee60f2b232");
       assert.ok(resp.publicKeyFingerprint === "80810fc13a8319fcf0e2ec322c82a4c304b782cc3ce671176343cfe8160c2279");
+    });
+
+    it("without publicKeyFingerprint", () => {
+      let crypto = new Crypto(testConfig);
+      crypto.publicKeyFingerprint = null;
+      let data = JSON.stringify({text: "message"});
+      let resp = crypto.encryptData({
+        data: data
+      });
+      assert.ok(resp);
+      assert.ok(!resp.publicKeyFingerprint);
     });
 
     it("with valid object", () => {
@@ -202,6 +251,53 @@ describe("Crypto", () => {
         getPrivateKey("./test/res/test_key_container.p12", "mykeyalias1", "Password1");
       }, /No key found for alias \[mykeyalias1\]/);
     });
+  });
+
+
+  describe("#newEncryptionParams", () => {
+    let crypto;
+    before(() => {
+      crypto = new Crypto(testConfig);
+    });
+    it("without options", () => {
+      let params = crypto.newEncryptionParams();
+      assert.ok(params.iv);
+      assert.ok(params.secretKey);
+      assert.ok(params.encryptedKey);
+      assert.ok(params.oaepHashingAlgorithm);
+      assert.ok(params.publicKeyFingerprint);
+      assert.ok(params.encoded);
+      assert.ok(params.encoded.iv);
+      assert.ok(params.encoded.secretKey);
+      assert.ok(params.encoded.encryptedKey);
+    });
+  });
+
+  describe("#createOAEPOptions", () => {
+    let createOAEPOptions = Crypto.__get__("createOAEPOptions");
+
+    it("not valid asymmetricCipher", () => {
+      assert.ok(!createOAEPOptions("foobar"));
+    });
+
+    it("valid asymmetricCipher and oaepHashingAlgorithm", () => {
+      let opts = createOAEPOptions("OAEP", "SHA-256");
+      assert.ok(opts.md);
+      assert.ok(opts.mgf1);
+    });
+  });
+
+  describe("#computePublicFingerprint", () => {
+    let computePublicFingerprint = Crypto.__get__("computePublicFingerprint");
+
+    it("not valid config", () => {
+      assert.ok(!computePublicFingerprint());
+    });
+
+    it("not valid publicKeyFingerprintType", () => {
+      assert.ok(!computePublicFingerprint({}));
+    });
+
   });
 
 });
