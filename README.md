@@ -4,7 +4,7 @@
 [![](https://sonarcloud.io/api/project_badges/measure?project=Mastercard_client-encryption-nodejs&metric=alert_status)](https://sonarcloud.io/dashboard?id=Mastercard_client-encryption-nodejs)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Mastercard_client-encryption-nodejs&metric=coverage)](https://sonarcloud.io/dashboard?id=Mastercard_client-encryption-nodejs)
 [![](https://img.shields.io/npm/v/mastercard-client-encryption.svg)](https://www.npmjs.com/package/mastercard-client-encryption)
-[![](https://img.shields.io/badge/license-MIT-yellow.svg)](https://github.com/Mastercard/client-encryption-csharp/blob/master/LICENSE)
+[![](https://img.shields.io/badge/license-MIT-yellow.svg)](https://github.com/Mastercard/client-encryption-nodejs/blob/master/LICENSE)
 
 ## Table of Contents
 
