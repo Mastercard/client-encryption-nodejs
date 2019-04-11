@@ -51,6 +51,26 @@ describe("MC API Service", () => {
       );
     });
 
+    it("callApi intercepted, without body", function (done) {
+      let service = {
+        ApiClient: {
+          instance: {
+            callApi: function () {
+              arguments[arguments.length - 1](null, arguments[7], {body: arguments[7], request: {url: "/resource"}});
+            }
+          }
+        }
+      };
+      let mcService = new MCService(service, testConfig);
+      // simulate callApi call from client
+      service.ApiClient.instance.callApi.call(mcService, "/resource", 'POST',
+        null, null, null, {test: "header"}, null, null, function cb(error, data) {
+          assert.ok(!data);
+          done();
+        }
+      );
+    });
+
   });
 
 });
