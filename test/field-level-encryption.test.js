@@ -60,6 +60,11 @@ describe("Field Level Encryption", () => {
       assert.ok(JSON.stringify(res.parent) === JSON.stringify({elem2: "test"}));
     });
 
+    it("not valid path", () => {
+      let res = elemFromPath("elem1.elem2", {elem2: "test"});
+      assert.ok(!res);
+    });
+
   });
 
   describe("#encrypt", () => {
@@ -129,6 +134,13 @@ describe("Field Level Encryption", () => {
       let response = require("./mock/response");
       let res = decrypt.call(fle, response);
       assert.ok(res.elem1.encryptedData.accountNumber === "5123456789012345");
+    });
+
+    it("decrypt response with no valid config", () => {
+      let response = JSON.parse(JSON.stringify(require("./mock/response")));
+      delete response.body.elem1;
+      let res = decrypt.call(fle, response);
+      assert.ok(res === response.body);
     });
 
     it("decrypt response replacing whole body", () => {
