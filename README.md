@@ -14,7 +14,7 @@
   - [References](#references)
 - [Usage](#usage)
   - [Prerequisites](#prerequisites)
-  - [Adding the Libraries to Your Project](#adding-the-libraries-to-your-project)
+  - [Adding the Library to Your Project](#adding-the-libraries-to-your-project)
   - [Performing Field Level Encryption and Decryption](#performing-field-level-encryption-and-decryption)
   - [Integrating with OpenAPI Generator API Client Libraries](#integrating-with-openapi-generator-api-client-libraries)
 
