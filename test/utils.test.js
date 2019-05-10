@@ -152,7 +152,7 @@ describe("Utils", () => {
 
   });
 
-  describe("mutateObjectProperty", () => {
+  describe("#mutateObjectProperty", () => {
     it("change object value", () => {
       let obj = {
         first: {
@@ -168,7 +168,7 @@ describe("Utils", () => {
       assert.ok(obj.first.second.third === "changed");
     });
 
-    it("field not found, don't change it", () => {
+    it("change object value, delete it", () => {
       let obj = {
         first: {
           second: {
@@ -178,13 +178,28 @@ describe("Utils", () => {
           }
         }
       };
-      let objStr = JSON.stringify(obj);
+      let path = "first.second.third";
+      utils.mutateObjectProperty(path, "changed", obj, "third");
+      assert.ok(!obj.first.second.third);
+    });
+
+    it("field not found, create it", () => {
+      let obj = {
+        first: {
+          second: {
+            third: {
+              field: "value"
+            }
+          }
+        }
+      };
+      let objStr = JSON.stringify({"first": {"second": {"third": {"field": "value"}, "not_exists": "changed"}}});
       let path = "first.second.not_exists";
       utils.mutateObjectProperty(path, "changed", obj);
       assert.ok(objStr === JSON.stringify(obj));
     });
 
-    it("field not found, don't change it (completely wrong path)", () => {
+    it("field not found, create it, long path", () => {
       let obj = {
         first: {
           second: {
@@ -194,13 +209,59 @@ describe("Utils", () => {
           }
         }
       };
-      let objStr = JSON.stringify(obj);
+      let objStr = JSON.stringify({
+        "first": {
+          "second": {
+            "third": {
+              "field": "value"
+            }
+          }
+        },
+        "foo": {
+          "bar": {
+            "yet": {
+              "another": {
+                "foo": {
+                  "bar": "changed"
+                }
+              }
+            }
+          }
+        }
+      });
       let path = "foo.bar.yet.another.foo.bar";
       utils.mutateObjectProperty(path, "changed", obj);
       assert.ok(objStr === JSON.stringify(obj));
     });
 
-    it("first part of path is correct, but field not found", () => {
+    it("first part of path is correct, but field not found, create it", () => {
+      let obj = {
+        first: {
+          second: {
+            third: {
+              field: "value"
+            }
+          }
+        }
+      };
+      let objStr = JSON.stringify({
+        "first": {
+          "second": {
+            "third": {
+              "field": "value"
+            }
+          },
+          "foo": {
+            "third": "changed"
+          }
+        }
+      });
+      let path = "first.foo.third";
+      utils.mutateObjectProperty(path, "changed", obj);
+      assert.ok(objStr === JSON.stringify(obj));
+    });
+
+    it("path is null", () => {
       let obj = {
         first: {
           second: {
@@ -211,11 +272,67 @@ describe("Utils", () => {
         }
       };
       let objStr = JSON.stringify(obj);
-      let path = "first.foo.third";
-      utils.mutateObjectProperty(path, "changed", obj);
+      utils.mutateObjectProperty(null, "changed", obj);
       assert.ok(objStr === JSON.stringify(obj));
     });
 
   });
+
+  describe("#resolveNode", () => {
+
+    it("when null", () => {
+      assert.ok(null === utils.resolveNode(null, null, false));
+    });
+
+    it("when path length == 0", () => {
+      assert.ok(null === utils.resolveNode("", {}, false));
+    });
+
+    it("when not dotted", () => {
+      assert.ok(null === utils.resolveNode("testpath", {}, false));
+    });
+
+    it("with valid path and obj", () => {
+      let res = utils.resolveNode("test.path.long", {
+        test: {
+          path: {
+            long: {
+              foo: "bar"
+            }
+          }
+        }
+      }, false);
+      assert.ok(JSON.stringify(res) === JSON.stringify({foo: "bar"}));
+    });
+
+    it("with valid path and obj not found", () => {
+      let res = utils.resolveNode("test.path.notfound", {
+        test: {
+          path: {
+            long: {
+              foo: "bar"
+            }
+          }
+        }
+      }, false);
+      assert.ok(res === null);
+    });
+
+    it("with valid path and obj not found, create it", () => {
+      let body = {
+        test: {
+          path: {
+            long: {
+              foo: "bar"
+            }
+          }
+        }
+      };
+      utils.resolveNode("test.path.notfound", body, true);
+      assert.ok(JSON.stringify(body) === JSON.stringify({"test": {"path": {"long": {"foo": "bar"}, "notfound": {}}}}));
+    });
+
+  });
+
 
 });

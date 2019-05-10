@@ -289,6 +289,10 @@ describe("Crypto", () => {
 
   describe("#computePublicFingerprint", () => {
     let computePublicFingerprint = Crypto.__get__("computePublicFingerprint");
+    let crypto;
+    before(() => {
+      crypto = new Crypto(testConfig);
+    });
 
     it("not valid config", () => {
       assert.ok(!computePublicFingerprint());
@@ -296,6 +300,16 @@ describe("Crypto", () => {
 
     it("not valid publicKeyFingerprintType", () => {
       assert.ok(!computePublicFingerprint({}));
+    });
+
+    it("compute public fingerprint: certificate", () => {
+      assert.ok("80810fc13a8319fcf0e2ec322c82a4c304b782cc3ce671176343cfe8160c2279",
+        computePublicFingerprint.call(crypto, {publicKeyFingerprintType: "certificate"}));
+    });
+
+    it("compute public fingerprint: publicKey", () => {
+      assert.ok("80810fc13a8319fcf0e2ec322c82a4c304b782cc3ce671176343cfe8160c2279",
+        computePublicFingerprint.call(crypto, {publicKeyFingerprintType: "publicKey"}));
     });
 
   });
