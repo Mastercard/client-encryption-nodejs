@@ -9,8 +9,8 @@ module.exports = {
         }],
       toDecrypt: [
         {
-          element: "elem1.encryptedData",
-          obj: "elem1"
+          element: "foo.elem1",
+          obj: "foo"
         }
       ]
     },
@@ -23,8 +23,8 @@ module.exports = {
         }],
       toDecrypt: [
         {
-          element: "elem2.encryptedData",
-          obj: "elem2"
+          element: "foo.elem1",
+          obj: "foo"
         }
       ]
     }

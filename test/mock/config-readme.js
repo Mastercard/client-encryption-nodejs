@@ -9,7 +9,7 @@ module.exports = {
         }],
       toDecrypt: [
         {
-          element: "path.to.encryptedFoo.encryptedData",
+          element: "path.to.encryptedFoo",
           obj: "path.to.foo"
         }
       ]

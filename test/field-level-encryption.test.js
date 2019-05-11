@@ -109,6 +109,8 @@ describe("Field Level Encryption", () => {
         }
       );
       assert.ok(res.header === null);
+      assert.ok(!res.body.path.to.encryptedData.sensitive);
+      assert.ok(!res.body.path.to.encryptedData.sensitive2);
       assert.ok(res.body.path);
       assert.ok(res.body.path.to);
       assert.ok(res.body.path.to.encryptedData);
@@ -163,7 +165,9 @@ describe("Field Level Encryption", () => {
     it("decrypt response", () => {
       let response = require("./mock/response");
       let res = decrypt.call(fle, response);
-      assert.ok(res.elem1.encryptedData.accountNumber === "5123456789012345");
+      assert.ok(res.foo.accountNumber === "5123456789012345");
+      assert.ok(!res.foo.elem1);
+      assert.ok(!res.foo.hasOwnProperty('encryptedData'));
     });
 
     it("decrypt response with readme config", () => {
@@ -175,9 +179,8 @@ describe("Field Level Encryption", () => {
       assert(res.path);
       assert(res.path.to);
       assert(res.path.to.foo);
-      assert(res.path.to.foo.encryptedData);
-      assert(res.path.to.foo.encryptedData.sensitive);
-      assert(res.path.to.foo.encryptedData.sensitive2);
+      assert(res.path.to.foo.sensitive);
+      assert(res.path.to.foo.sensitive2);
     });
 
     it("decrypt response with no valid config", () => {
@@ -189,12 +192,13 @@ describe("Field Level Encryption", () => {
 
     it("decrypt response replacing whole body", () => {
       let config = JSON.parse(JSON.stringify(testConfig));
-      config.paths[0].toDecrypt[0].obj = "";
-      config.paths[0].toDecrypt[0].element = "encryptedData";
+      config.paths[0].toDecrypt[0].element = "";
+      config.paths[0].toDecrypt[0].obj = "encryptedData";
       let fle = new FieldLevelEncryption(config);
       let response = require("./mock/response-root");
       let res = decrypt.call(fle, response);
       assert.ok(res.encryptedData.accountNumber === "5123456789012345");
+      assert.ok(res.notDelete);
     });
 
     it("decrypt with header", () => {

@@ -168,7 +168,7 @@ describe("Utils", () => {
       assert.ok(obj.first.second.third === "changed");
     });
 
-    it("change object value, delete it", () => {
+    it("change object value, change it but not delete", () => {
       let obj = {
         first: {
           second: {
@@ -179,8 +179,8 @@ describe("Utils", () => {
         }
       };
       let path = "first.second.third";
-      utils.mutateObjectProperty(path, "changed", obj, "third");
-      assert.ok(!obj.first.second.third);
+      utils.mutateObjectProperty(path, "changed", obj);
+      assert.ok(obj.first.second.third === "changed");
     });
 
     it("field not found, create it", () => {
@@ -330,6 +330,46 @@ describe("Utils", () => {
       };
       utils.resolveNode("test.path.notfound", body, true);
       assert.ok(JSON.stringify(body) === JSON.stringify({"test": {"path": {"long": {"foo": "bar"}, "notfound": {}}}}));
+    });
+
+  });
+
+  describe("#deleteNode", () => {
+
+    it("with nulls", () => {
+      assert.doesNotThrow(() => {
+        utils.deleteNode(null, null, null);
+        utils.deleteNode("path.to.foo", null, null);
+        let body = {};
+        utils.deleteNode("path.to.foo", body);
+        assert.ok(JSON.stringify(body) === JSON.stringify({}));
+      });
+    });
+
+    it("not found path, shouldn't remove it", () => {
+      let body = {path: {to: {foo: {field: "value"}}}};
+      let str = JSON.stringify(body);
+      utils.deleteNode("path.to.notfound", body, null);
+      assert.ok(str === JSON.stringify(body));
+    });
+
+    it("path found, should remove it", () => {
+      let body = {path: {to: {foo: {field: "value"}}}};
+      utils.deleteNode("path.to.foo", body, null);
+      assert.ok(JSON.stringify({path: {to: {}}}) === JSON.stringify(body));
+    });
+
+    it("root path, without properties, shouldn't remove", () => {
+      let body = {path: {to: {foo: {field: "value"}}}};
+      let str = JSON.stringify(body);
+      utils.deleteNode("", body, null);
+      assert.ok(str === JSON.stringify(body));
+    });
+
+    it("root path, with properties, should remove the properties", () => {
+      let body = {path: {to: {foo: {field: "value"}}}, prop: "prop", prop2: "prop2"};
+      utils.deleteNode("", body, ["prop", "prop2"]);
+      assert.ok(JSON.stringify({"path": {"to": {"foo": {"field": "value"}}}}) === JSON.stringify(body));
     });
 
   });
