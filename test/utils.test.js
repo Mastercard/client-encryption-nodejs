@@ -278,62 +278,6 @@ describe("Utils", () => {
 
   });
 
-  describe("#resolveNode", () => {
-
-    it("when null", () => {
-      assert.ok(null === utils.resolveNode(null, null, false));
-    });
-
-    it("when path length == 0", () => {
-      assert.ok(null === utils.resolveNode("", {}, false));
-    });
-
-    it("when not dotted", () => {
-      assert.ok(null === utils.resolveNode("testpath", {}, false));
-    });
-
-    it("with valid path and obj", () => {
-      let res = utils.resolveNode("test.path.long", {
-        test: {
-          path: {
-            long: {
-              foo: "bar"
-            }
-          }
-        }
-      }, false);
-      assert.ok(JSON.stringify(res) === JSON.stringify({foo: "bar"}));
-    });
-
-    it("with valid path and obj not found", () => {
-      let res = utils.resolveNode("test.path.notfound", {
-        test: {
-          path: {
-            long: {
-              foo: "bar"
-            }
-          }
-        }
-      }, false);
-      assert.ok(res === null);
-    });
-
-    it("with valid path and obj not found, create it", () => {
-      let body = {
-        test: {
-          path: {
-            long: {
-              foo: "bar"
-            }
-          }
-        }
-      };
-      utils.resolveNode("test.path.notfound", body, true);
-      assert.ok(JSON.stringify(body) === JSON.stringify({"test": {"path": {"long": {"foo": "bar"}, "notfound": {}}}}));
-    });
-
-  });
-
   describe("#deleteNode", () => {
 
     it("with nulls", () => {
