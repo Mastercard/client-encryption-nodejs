@@ -104,9 +104,9 @@ const config = {
         }],
       toDecrypt: [
         {
-          /* path to element with encryption fields in the response json body */
+          /* path to element where to store decrypted fields in response object */
           element: "path.to.encryptedFoo",
-          /* path to object where to store decrypted fields in response json body */
+          /* path to object with encryption fields */
           obj: "path.to.foo"
         }
       ]
