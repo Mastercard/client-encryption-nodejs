@@ -9,8 +9,8 @@ module.exports = {
         }],
       toDecrypt: [
         {
-          element: "",
-          obj: "encrypted_payload"
+          element: "encrypted_payload",
+          obj: ""
         }
       ]
     }

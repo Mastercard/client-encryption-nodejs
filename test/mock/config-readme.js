@@ -4,27 +4,13 @@ module.exports = {
       path: "/resource",
       toEncrypt: [
         {
-          element: "elem1.encryptedData",
-          obj: "elem1"
+          element: "path.to.encryptedData",
+          obj: "path.to"
         }],
       toDecrypt: [
         {
-          element: "foo.elem1",
-          obj: "foo"
-        }
-      ]
-    },
-    {
-      path: "/mappings/*",
-      toEncrypt: [
-        {
-          element: "elem2.encryptedData",
-          obj: "elem2"
-        }],
-      toDecrypt: [
-        {
-          element: "foo.elem1",
-          obj: "foo"
+          element: "path.to.encryptedFoo",
+          obj: "path.to.foo"
         }
       ]
     }

@@ -97,22 +97,24 @@ const config = {
       path: "/resource",
       toEncrypt: [
         {
-          /* path to element to be encrypted in request object */
+          /* path to element to be encrypted in request json body */
           element: "path.to.foo",
-          /* path to object where to store encryption fields in request object */
+          /* path to object where to store encryption fields in request json body */
           obj: "path.to.encryptedFoo"
         }],
       toDecrypt: [
         {
-          element: "path.to.foo",
-          obj: "path.to.encryptedFoo"
+          /* path to element where to store decrypted fields in response object */
+          element: "path.to.encryptedFoo",
+          /* path to object with encryption fields */
+          obj: "path.to.foo"
         }
       ]
     }
   ],
   ivFieldName: 'iv',
   encryptedKeyFieldName: 'encryptedKey',
-  encryptedValueFieldName: 'encryptedValue',
+  encryptedValueFieldName: 'encryptedData',
   dataEncoding: 'hex',
   encryptionCertificate: "./path/to/public.cert"
   oaepPaddingDigestAlgorithm: 'SHA-256',
@@ -139,8 +141,8 @@ const string payload =
   "path": {
     "to": {
       "foo": {
-        "sensitiveField1": "sensitiveValue1",
-        "sensitiveField2": "sensitiveValue2"
+        "sensitive": "this is a secret!",
+        "sensitive2": "this is a super-secret!"
       }
     }
   }
@@ -153,15 +155,17 @@ Output:
 
 ```json
 {
-    "path": {
-        "to": {
-            "encryptedFoo": {
-                "iv": "7f1105fb0c684864a189fb3709ce3d28",
-                "encryptedKey": "67f467d1b653d98411a0c6d3c(...)ffd4c09dd42f713a51bff2b48f937c8",
-                "encryptedValue": "b73aabd267517fc09ed72455c2(...)dffb5fa04bf6e6ce9ade1ff514ed6141"
-            }
-        }
+  "path": {
+    "to": {
+      "encryptedFoo": {
+        "iv": "7f1105fb0c684864a189fb3709ce3d28",
+        "encryptedKey": "67f467d1b653d98411a0c6d3c(...)ffd4c09dd42f713a51bff2b48f937c8",
+        "encryptedData": "b73aabd267517fc09ed72455c2(...)dffb5fa04bf6e6ce9ade1ff514ed6141",
+        "publicKeyFingerprint": "80810fc13a8319fcf0e2e(...)82cc3ce671176343cfe8160c2279",
+        "oaepHashingAlgorithm": "SHA256"
+      }
     }
+  }
 }
 ```
 
@@ -186,28 +190,29 @@ response.body =
       "encryptedFoo": {
         "iv": "e5d313c056c411170bf07ac82ede78c9",
         "encryptedKey": "e3a56746c0f9109d18b3a2652b76(...)f16d8afeff36b2479652f5c24ae7bd",
-        "encryptedValue": "809a09d78257af5379df0c454dcdf(...)353ed59fe72fd4a7735c69da4080e74f"
+        "encryptedData": "809a09d78257af5379df0c454dcdf(...)353ed59fe72fd4a7735c69da4080e74f",
+        "oaepHashingAlgorithm": "SHA256",
+        "publicKeyFingerprint": "80810fc13a8319fcf0e2e(...)3ce671176343cfe8160c2279"
       }
     }
   }
 };
 const fle = new require('mastercard-client-encryption').FieldLevelEncryption(config);
 let responsePayload = fle.decrypt(response);
-console.log(responsePayload);
 ```
 
 Output:
 
 ```json
 {
-    "path": {
-        "to": {
-            "foo": {
-                "sensitiveField1": "sensitiveValue1",
-                "sensitiveField2": "sensitiveValue2"
-            }
-        }
+  "path": {
+    "to": {
+      "foo": {
+        "sensitive": "this is a secret",
+        "sensitive2": "this is a super secret!"
+      }
     }
+  }
 }
 ```
 
@@ -236,7 +241,7 @@ See also:
 
 To use it:
 
-1. Generate the OpenAPI client, as (above)[#openapi-generator]
+1. Generate the OpenAPI client, as [above](#openapi-generator)
 
 2. Import the **mastercard-client-encryption** library
 
@@ -244,7 +249,7 @@ To use it:
    const mcapi = require('mastercard-client-encryption');
    ```
 
-3. Import the OpenAPI Client using our decorator object:
+3. Import the OpenAPI Client using the `Service` decorator object:
 
    ```js
    const openAPIClient = require('./path/to/generated/openapi/client');
@@ -262,7 +267,7 @@ To use it:
    let merchant = /* ... */
    api.createMerchants(merchant, (error, data, response) => {
      // requests and responses will be automatically encrypted and decrypted
-     // accordingly to the configuration used to instantiate the mcapi.Service.
+     // accordingly with the configuration used to instantiate the mcapi.Service.
      
      /* use response/data object here */
    });

@@ -77,16 +77,48 @@ describe("Field Level Encryption", () => {
           elem1: {
             encryptedData: {
               accountNumber: "5123456789012345"
-            }
+            },
+            shouldBeThere: "here I'am"
           }
         }
       );
       assert.ok(res.header === null);
+      assert.ok(res.body.elem1.shouldBeThere);
       assert.ok(res.body.elem1.encryptedData);
       assert.ok(res.body.elem1.encryptedKey);
       assert.ok(res.body.elem1.iv);
       assert.ok(res.body.elem1.oaepHashingAlgorithm);
       assert.ok(res.body.elem1.publicKeyFingerprint);
+      assert.ok(!res.body.elem1.encryptedData.accountNumber);
+    });
+
+    it("encrypt body payload with readme config", () => {
+      const testConfigReadme = require("./mock/config-readme");
+      let fle = new FieldLevelEncryption(testConfigReadme);
+      let encrypt = FieldLevelEncryption.__get__("encrypt");
+      let res = encrypt.call(fle, "/resource", null,
+        {
+          path: {
+            to: {
+              encryptedData: {
+                sensitive: "this is a secret",
+                sensitive2: "this is a super secret!"
+              }
+            }
+          }
+        }
+      );
+      assert.ok(res.header === null);
+      assert.ok(!res.body.path.to.encryptedData.sensitive);
+      assert.ok(!res.body.path.to.encryptedData.sensitive2);
+      assert.ok(res.body.path);
+      assert.ok(res.body.path.to);
+      assert.ok(res.body.path.to.encryptedData);
+      assert.ok(!res.body.path.to.encryptedData.sensitive);
+      assert.ok(res.body.path.to.iv);
+      assert.ok(res.body.path.to.encryptedKey);
+      assert.ok(res.body.path.to.publicKeyFingerprint);
+      assert.ok(res.body.path.to.oaepHashingAlgorithm);
     });
 
     it("encrypt with header", () => {
@@ -133,7 +165,22 @@ describe("Field Level Encryption", () => {
     it("decrypt response", () => {
       let response = require("./mock/response");
       let res = decrypt.call(fle, response);
-      assert.ok(res.elem1.encryptedData.accountNumber === "5123456789012345");
+      assert.ok(res.foo.accountNumber === "5123456789012345");
+      assert.ok(!res.foo.elem1);
+      assert.ok(!res.foo.hasOwnProperty('encryptedData'));
+    });
+
+    it("decrypt response with readme config", () => {
+      const testConfigReadme = require("./mock/config-readme");
+      let fle = new FieldLevelEncryption(testConfigReadme);
+      let decrypt = FieldLevelEncryption.__get__("decrypt");
+      let responseReadme = require("./mock/response-readme");
+      let res = decrypt.call(fle, responseReadme);
+      assert(res.path);
+      assert(res.path.to);
+      assert(res.path.to.foo);
+      assert(res.path.to.foo.sensitive);
+      assert(res.path.to.foo.sensitive2);
     });
 
     it("decrypt response with no valid config", () => {
@@ -145,12 +192,13 @@ describe("Field Level Encryption", () => {
 
     it("decrypt response replacing whole body", () => {
       let config = JSON.parse(JSON.stringify(testConfig));
-      config.paths[0].toDecrypt[0].obj = "";
-      config.paths[0].toDecrypt[0].element = "encryptedData";
+      config.paths[0].toDecrypt[0].element = "";
+      config.paths[0].toDecrypt[0].obj = "encryptedData";
       let fle = new FieldLevelEncryption(config);
       let response = require("./mock/response-root");
       let res = decrypt.call(fle, response);
       assert.ok(res.encryptedData.accountNumber === "5123456789012345");
+      assert.ok(res.notDelete);
     });
 
     it("decrypt with header", () => {
