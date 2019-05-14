@@ -167,7 +167,7 @@ Output:
 
 #### Performing Decryption <a name="performing-decryption"></a>
 
-Call `FieldLevelEncryption.encrypt()` with an (encrypted) `response` object with the following fields:
+Call `FieldLevelEncryption.decrypt()` with an (encrypted) `response` object with the following fields:
 
 - `body`: json payload
 - `request.url`: requesting url
