@@ -116,8 +116,9 @@ const config = {
   encryptedKeyFieldName: 'encryptedKey',
   encryptedValueFieldName: 'encryptedData',
   dataEncoding: 'hex',
-  encryptionCertificate: "./path/to/public.cert"
-  oaepPaddingDigestAlgorithm: 'SHA-256',
+  encryptionCertificate: "./path/to/public.cert",
+  privateKey: "./path/to/your/private.key",
+  oaepPaddingDigestAlgorithm: 'SHA-256'
 };
 ```
 
