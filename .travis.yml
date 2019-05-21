@@ -11,6 +11,7 @@ matrix:
     - node_js: 9
     - node_js: 10
     - node_js: 11
+    - node_js: 12
     - node_js: node        # latest stable release
     - node_js: "lts/*"     # latest LTS release
       env:
