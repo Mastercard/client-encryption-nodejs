@@ -58,6 +58,25 @@ describe("Payload encryption", () => {
       assert.ok(body.encryptedItems.oaepHashingAlgorithm);
     });
 
+    it("elem not found", () => {
+      let body = {
+        itemsToEncrypt: {
+          first: "first",
+          second: "second"
+        },
+        dontEncrypt: {
+          text: "just text..."
+        }
+      };
+      encryptBody.call(fle, {
+        element: "not.found",
+        obj: "encryptedItems"
+      }, body);
+      assert.ok(body.dontEncrypt);
+      assert.ok(body.itemsToEncrypt);
+      assert.ok(!body.encryptedItems);
+    });
+
     it("nested object to encrypt", () => {
       let body = {
         path: {
