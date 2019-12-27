@@ -75,7 +75,7 @@ The core methods responsible for payload encryption and decryption are `encryptD
 - `encrypt()` usage:
 
 ```js
-const fle = new (require('mastercard-client-encryption')).FieldLevelEncryption(config);
+const fle = new clientEncryption.FieldLevelEncryption(config);
 // ... 
 let encryptedRequestPayload = fle.encrypt(endpoint, header, body);
 ```
@@ -83,7 +83,7 @@ let encryptedRequestPayload = fle.encrypt(endpoint, header, body);
 - `decrypt()` usage:
 
 ```js
-const fle = new (require('mastercard-client-encryption')).FieldLevelEncryption(config);
+const fle = new clientEncryption.FieldLevelEncryption(config);
 // ... 
 let responsePayload = fle.decrypt(encryptedResponsePayload);
 ```
@@ -139,7 +139,7 @@ Call `FieldLevelEncryption.encrypt()` with a JSON request payload, and optional 
 Example using the configuration [above](#configuring-the-field-level-encryption):
 
 ```js
-const string payload = 
+const payload = 
 {
   "path": {
     "to": {
