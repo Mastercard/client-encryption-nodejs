@@ -75,14 +75,16 @@ The core methods responsible for payload encryption and decryption are `encryptD
 - `encrypt()` usage:
 
 ```js
-const fle = new require('mastercard-client-encryption').FieldLevelEncryption(config);
+const fle = new (require('mastercard-client-encryption')).FieldLevelEncryption(config);
+// ... 
 let encryptedRequestPayload = fle.encrypt(endpoint, header, body);
 ```
 
 - `decrypt()` usage:
 
 ```js
-const fle = new require('mastercard-client-encryption').FieldLevelEncryption(config);
+const fle = new (require('mastercard-client-encryption')).FieldLevelEncryption(config);
+// ... 
 let responsePayload = fle.decrypt(encryptedResponsePayload);
 ```
 
@@ -149,6 +151,7 @@ const string payload =
   }
 };
 const fle = new (require('mastercard-client-encryption')).FieldLevelEncryption(config);
+// ... 
 let responsePayload = fle.encrypt("/resource1", header, payload);
 ```
 
