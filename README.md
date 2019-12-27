@@ -148,7 +148,7 @@ const string payload =
     }
   }
 };
-const fle = new require('mastercard-client-encryption').FieldLevelEncryption(config);
+const fle = new (require('mastercard-client-encryption')).FieldLevelEncryption(config);
 let responsePayload = fle.encrypt("/resource1", header, payload);
 ```
 
@@ -198,7 +198,7 @@ response.body =
     }
   }
 };
-const fle = new require('mastercard-client-encryption').FieldLevelEncryption(config);
+const fle = new (require('mastercard-client-encryption')).FieldLevelEncryption(config);
 let responsePayload = fle.decrypt(response);
 ```
 
