@@ -24,9 +24,9 @@ NodeJS library for Mastercard API compliant payload encryption/decryption.
 
 ### Compatibility <a name="compatibility"></a>
 
-NodeJS 6.12.3+
+- NodeJS 6.12.3+
 
-There shouldn't be any Node compatibility issues with this package, but it's a good idea to keep your Node versions up-to-date. It is recommended that you use one of the LTS Node.js releases, or one of the more general recent releases. A Node version manager such as nvm (Mac and Linux) or nvm-windows is a good way to stay on top of this.
+There shouldn't be any Node compatibility issues with this package, but it's a good idea to keep your Node versions up-to-date. It is recommended that you use one of the LTS Node.js releases, or one of the more general recent releases. A Node version manager such as `nvm` (*Mac* and *Linux*) or `nvm-windows` is a good way to stay on top of this.
 
 ### References <a name="references"></a>
 
@@ -75,14 +75,16 @@ The core methods responsible for payload encryption and decryption are `encryptD
 - `encrypt()` usage:
 
 ```js
-const fle = new require('mastercard-client-encryption').FieldLevelEncryption(config);
+const fle = new clientEncryption.FieldLevelEncryption(config);
+// ... 
 let encryptedRequestPayload = fle.encrypt(endpoint, header, body);
 ```
 
 - `decrypt()` usage:
 
 ```js
-const fle = new require('mastercard-client-encryption').FieldLevelEncryption(config);
+const fle = new clientEncryption.FieldLevelEncryption(config);
+// ... 
 let responsePayload = fle.decrypt(encryptedResponsePayload);
 ```
 
@@ -137,7 +139,7 @@ Call `FieldLevelEncryption.encrypt()` with a JSON request payload, and optional 
 Example using the configuration [above](#configuring-the-field-level-encryption):
 
 ```js
-const string payload = 
+const payload = 
 {
   "path": {
     "to": {
@@ -149,6 +151,7 @@ const string payload =
   }
 };
 const fle = new (require('mastercard-client-encryption')).FieldLevelEncryption(config);
+// ... 
 let responsePayload = fle.encrypt("/resource1", header, payload);
 ```
 
@@ -273,3 +276,4 @@ To use it:
      /* use response/data object here */
    });
    ```
+
