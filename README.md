@@ -24,9 +24,9 @@ NodeJS library for Mastercard API compliant payload encryption/decryption.
 
 ### Compatibility <a name="compatibility"></a>
 
-NodeJS 6.12.3+
+- NodeJS 6.12.3+
 
-There shouldn't be any Node compatibility issues with this package, but it's a good idea to keep your Node versions up-to-date. It is recommended that you use one of the LTS Node.js releases, or one of the more general recent releases. A Node version manager such as nvm (Mac and Linux) or nvm-windows is a good way to stay on top of this.
+There shouldn't be any Node compatibility issues with this package, but it's a good idea to keep your Node versions up-to-date. It is recommended that you use one of the LTS Node.js releases, or one of the more general recent releases. A Node version manager such as `nvm` (*Mac* and *Linux*) or `nvm-windows` is a good way to stay on top of this.
 
 ### References <a name="references"></a>
 
@@ -276,3 +276,4 @@ To use it:
      /* use response/data object here */
    });
    ```
+
