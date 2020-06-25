@@ -130,7 +130,7 @@ For all config options, please see:
 
 We have a predefined set of configurations to use with Mastercard services:
 
-- [Service configurations](https://github.com/Mastercard/client-encryption-nodejs/wiki/Mastercard-Services-Configuration) wiki page
+- [Service configurations](https://github.com/Mastercard/client-encryption-nodejs/wiki/Service-Configurations-for-Client-Encryption-NodeJS)
 
 #### Performing Encryption <a name="performing-encryption"></a>
 
