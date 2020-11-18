@@ -33,7 +33,7 @@ jobs:
           -Dsonar.organization=mastercard
           -Dsonar.projectName=client-encryption-nodejs
           -Dsonar.projectKey=Mastercard_client-encryption-nodejs
-          -Dsonar.sources=./src
+          -Dsonar.sources=./lib
           -Dsonar.tests=./test
           -Dsonar.coverage.jacoco.xmlReportPaths=test-results.xml
           -Dsonar.javascript.lcov.reportPaths=.nyc_output/coverage.lcov
