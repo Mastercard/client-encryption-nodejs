@@ -31,8 +31,8 @@ jobs:
       with:
         args: >
           -Dsonar.organization=mastercard
-          -Dsonar.projectName=oauth1-signer-nodejs
-          -Dsonar.projectKey=Mastercard_oauth1-signer-nodejs
+          -Dsonar.projectName=client-encryption-nodejs
+          -Dsonar.projectKey=Mastercard_client-encryption-nodejs
           -Dsonar.sources=./src
           -Dsonar.tests=./test
           -Dsonar.coverage.jacoco.xmlReportPaths=test-results.xml
