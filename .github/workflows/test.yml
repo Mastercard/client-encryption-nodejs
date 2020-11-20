@@ -1,4 +1,4 @@
-name: Npm build & test
+name: Build & Test
 
 on:
   push:
