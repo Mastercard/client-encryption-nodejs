@@ -7,12 +7,15 @@
     "node": ">=6.12.3"
   },
   "scripts": {
-    "test": "mocha && mocha --reporter mocha-sonar-generic-test-coverage > test-results.xml",
+    "test": "mocha --timeout 10000 && mocha --reporter mocha-sonar-generic-test-coverage > test-results.xml",
     "coverage": "nyc mocha && nyc report --reporter=text-lcov > .nyc_output/coverage.lcov",
     "lint": "eslint lib --ext .js",
     "lint:fix": "eslint lib --ext .js --fix",
     "lint:report": "npm run lint -- -f checkstyle --output-file target/checkstyle.xml",
     "precommit": "lint-staged"
+  },
+  "mocha": {
+    "timeout": "5000"
   },
   "lint-staged": {
     "linters": {
