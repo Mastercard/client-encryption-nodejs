@@ -7,7 +7,7 @@
     "node": ">=6.12.3"
   },
   "scripts": {
-    "test": "mocha --timeout 10000 && mocha --reporter mocha-sonar-generic-test-coverage > test-results.xml",
+    "test": "mocha && mocha --reporter mocha-sonar-generic-test-coverage > test-results.xml",
     "coverage": "nyc mocha && nyc report --reporter=text-lcov > .nyc_output/coverage.lcov",
     "lint": "eslint lib --ext .js",
     "lint:fix": "eslint lib --ext .js --fix",
