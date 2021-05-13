@@ -1,4 +1,5 @@
 # client-encryption-nodejs
+<img src="https://developer.mastercard.com/img/logo_cogs.svg" />
 
 [![](https://github.com/Mastercard/client-encryption-nodejs/workflows/Build%20&%20Test/badge.svg)](https://github.com/Mastercard/client-encryption-nodejs/actions?query=workflow%3A%22Build+%26+Test%22)
 [![](https://sonarcloud.io/api/project_badges/measure?project=Mastercard_client-encryption-nodejs&metric=alert_status)](https://sonarcloud.io/dashboard?id=Mastercard_client-encryption-nodejs)
