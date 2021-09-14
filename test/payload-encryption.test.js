@@ -6,16 +6,16 @@ const testConfig = require("./mock/config");
 
 describe("Payload encryption", () => {
 
-  let config = JSON.parse(JSON.stringify(testConfig));
+  const config = JSON.parse(JSON.stringify(testConfig));
   config['encryptedValueFieldName'] = "encryptedValue";
-  let fle = new FieldLevelEncryption(config);
-  let encryptBody = FieldLevelEncryption.__get__("encryptBody");
-  let decryptBody = FieldLevelEncryption.__get__("decryptBody");
+  const fle = new FieldLevelEncryption(config);
+  const encryptBody = FieldLevelEncryption.__get__("encryptBody");
+  const decryptBody = FieldLevelEncryption.__get__("decryptBody");
 
   describe("#encryptBody", () => {
 
     it("with sibling", () => {
-      let body = {
+      const body = {
         data: {
           field1: "value1",
           field2: "value2"
@@ -35,7 +35,7 @@ describe("Payload encryption", () => {
     });
 
     it("destination obj not exists", () => {
-      let body = {
+      const body = {
         itemsToEncrypt: {
           first: "first",
           second: "second"
@@ -59,7 +59,7 @@ describe("Payload encryption", () => {
     });
 
     it("elem not found", () => {
-      let body = {
+      const body = {
         itemsToEncrypt: {
           first: "first",
           second: "second"
@@ -78,7 +78,7 @@ describe("Payload encryption", () => {
     });
 
     it("nested object to encrypt", () => {
-      let body = {
+      const body = {
         path: {
           to: {
             encryptedData: {
@@ -103,7 +103,7 @@ describe("Payload encryption", () => {
     });
 
     it("nested object, create different nested object and delete it", () => {
-      let body = {
+      const body = {
         path: {
           to: {
             foo: {
@@ -134,7 +134,7 @@ describe("Payload encryption", () => {
 
   describe("#decryptBody", () => {
     it("nested properties, create new obj", () => {
-      let body = {
+      const body = {
         path: {
           to: {
             encryptedFoo: {
@@ -163,7 +163,7 @@ describe("Payload encryption", () => {
     });
 
     it("primitive type", () => {
-      let body = {
+      const body = {
         data: {
           encryptedValue:
             'e2d6a3a76ea6e605e55b400e5a4eba11',

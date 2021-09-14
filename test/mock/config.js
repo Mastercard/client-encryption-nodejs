@@ -27,6 +27,36 @@ module.exports = {
           obj: "foo"
         }
       ]
+    },
+    {
+      path: "/array-resp$",
+      toEncrypt: [
+        {
+          element: "$",
+          obj: "$"
+        }
+      ],
+      toDecrypt: [
+        {
+          element: "$",
+          obj: "$"
+        }
+      ]
+    },
+    {
+      path: "/array-resp2",
+      toEncrypt: [
+        {
+          element: "$",
+          obj: "$"
+        }
+      ],
+      toDecrypt: [
+        {
+          element: "$",
+          obj: "path.to.foo"
+        }
+      ]
     }
   ],
   oaepPaddingDigestAlgorithm: 'SHA-512',

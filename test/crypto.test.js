@@ -25,7 +25,7 @@ describe("Crypto", () => {
     });
 
     it("with wrong encoding", () => {
-      let config = JSON.parse(JSON.stringify(testConfig));
+      const config = JSON.parse(JSON.stringify(testConfig));
       config["dataEncoding"] = "foo";
       assert.throws(() =>
         new Crypto(config), /Config not valid: dataEncoding should be 'hex' or 'base64'/
@@ -33,7 +33,7 @@ describe("Crypto", () => {
     });
 
     it("with one property not defined", () => {
-      let config = JSON.parse(JSON.stringify(testConfig));
+      const config = JSON.parse(JSON.stringify(testConfig));
       delete config["ivFieldName"];
       assert.throws(() =>
         new Crypto(config), /Config not valid: please check that all the properties are defined./
@@ -41,7 +41,7 @@ describe("Crypto", () => {
     });
 
     it("with empty paths", () => {
-      let config = JSON.parse(JSON.stringify(testConfig));
+      const config = JSON.parse(JSON.stringify(testConfig));
       config.paths = [];
       assert.throws(() =>
         new Crypto(config), /Config not valid: paths should be not empty./
@@ -55,7 +55,7 @@ describe("Crypto", () => {
     });
 
     it("with valid config with private keystore", () => {
-      let config = JSON.parse(JSON.stringify(testConfig));
+      const config = JSON.parse(JSON.stringify(testConfig));
       delete config.privateKey;
       config.keyStore = "./test/res/test_key.p12";
       config.keyStoreAlias = "mykeyalias";
@@ -73,7 +73,7 @@ describe("Crypto", () => {
     });
 
     it("with config header missing iv", () => {
-      let config = JSON.parse(JSON.stringify(testConfigHeader));
+      const config = JSON.parse(JSON.stringify(testConfigHeader));
       delete config["ivHeaderName"];
       assert.throws(() =>
         new Crypto(config), /Config not valid: please check that all the properties are defined./
@@ -81,41 +81,54 @@ describe("Crypto", () => {
     });
 
     it("without publicKeyFingerprintType", () => {
-      let config = JSON.parse(JSON.stringify(testConfig));
+      const config = JSON.parse(JSON.stringify(testConfig));
       delete config["publicKeyFingerprintType"];
       assert.throws(() => new Crypto(config), /Config not valid: propertiesFingerprint should be: 'certificate' or 'publicKey'/);
     });
 
     it("without publicKeyFingerprintType, but providing the publicKeyFingerprint", () => {
-      let config = JSON.parse(JSON.stringify(testConfig));
+      const config = JSON.parse(JSON.stringify(testConfig));
       delete config["publicKeyFingerprintType"];
       config.publicKeyFingerprint = "abc";
       assert.ok(new Crypto(config).publicKeyFingerprint = "abc");
     });
 
     it("with wrong publicKeyFingerprintType", () => {
-      let config = JSON.parse(JSON.stringify(testConfig));
+      const config = JSON.parse(JSON.stringify(testConfig));
       config.publicKeyFingerprintType = "foobar";
       assert.throws(() => new Crypto(config), /Config not valid: propertiesFingerprint should be: 'certificate' or 'publicKey'/);
     });
 
     it("with right publicKeyFingerprintType: certificate", () => {
-      let config = JSON.parse(JSON.stringify(testConfig));
+      const config = JSON.parse(JSON.stringify(testConfig));
       config.publicKeyFingerprintType = "certificate";
       assert.doesNotThrow(() => new Crypto(config));
     });
 
     it("with right publicKeyFingerprintType: publicKey", () => {
-      let config = JSON.parse(JSON.stringify(testConfig));
+      const config = JSON.parse(JSON.stringify(testConfig));
       config.publicKeyFingerprintType = "publicKey";
       assert.doesNotThrow(() => new Crypto(config));
     });
 
     it("without keyStore and privateKey", () => {
-      let config = JSON.parse(JSON.stringify(testConfig));
+      const config = JSON.parse(JSON.stringify(testConfig));
       delete config["privateKey"];
       delete config["keyStore"];
       assert.doesNotThrow(() => new Crypto(config));
+    });
+
+    it("with multiple roots (encrypt)", () => {
+      const config = JSON.parse(JSON.stringify(testConfig));
+      config.paths[2].toEncrypt.push(config.paths[2].toEncrypt[0]);
+      assert.throws(() => new Crypto(config), /Config not valid: found multiple configurations encrypt\/decrypt with root mapping/);
+    });
+
+    it("with multiple roots (decrypt)", () => {
+      const config = JSON.parse(JSON.stringify(testConfig));
+      config.paths[2].toDecrypt.push(config.paths[2].toDecrypt[0]);
+      config.paths[2].toDecrypt[1].obj = "abc";
+      assert.throws(() => new Crypto(config), /Config not valid: found multiple configurations encrypt\/decrypt with root mapping/);
     });
 
   });
@@ -133,8 +146,8 @@ describe("Crypto", () => {
     });
 
     it("with valid object, iv and secretKey", () => {
-      let data = JSON.stringify({text: "message"});
-      let resp = crypto.encryptData({
+      const data = JSON.stringify({text: "message"});
+      const resp = crypto.encryptData({
         data: data,
         iv: utils.stringToBytes(iv, 'hex'),
         secretKey: utils.stringToBytes(secretKey, 'hex')
@@ -144,10 +157,10 @@ describe("Crypto", () => {
     });
 
     it("without publicKeyFingerprint", () => {
-      let crypto = new Crypto(testConfig);
+      const crypto = new Crypto(testConfig);
       crypto.publicKeyFingerprint = null;
-      let data = JSON.stringify({text: "message"});
-      let resp = crypto.encryptData({
+      const data = JSON.stringify({text: "message"});
+      const resp = crypto.encryptData({
         data: data
       });
       assert.ok(resp);
@@ -155,8 +168,8 @@ describe("Crypto", () => {
     });
 
     it("with valid object", () => {
-      let data = JSON.stringify({text: "message"});
-      let resp = crypto.encryptData({
+      const data = JSON.stringify({text: "message"});
+      const resp = crypto.encryptData({
         data: data
       });
       assert.ok(resp);
@@ -186,7 +199,7 @@ describe("Crypto", () => {
     });
 
     it("with valid object", () => {
-      let resp = crypto.decryptData("3590b63d1520a57bd4cd1414a7a75f47d65f99e1427d6cfe744d72ee60f2b232", iv, "SHA-512",
+      const resp = crypto.decryptData("3590b63d1520a57bd4cd1414a7a75f47d65f99e1427d6cfe744d72ee60f2b232", iv, "SHA-512",
         "e283a661efa235fbc5e7243b7b78914a7f33574eb66cc1854829f7debfce4163f3ce86ad2c3ed2c8fe97b2258ab8a158281147698b7fddf5e82544b0b637353d2c204798f014112a5e278db0b29ad852b1417dc761593fad3f0a1771797771796dc1e8ae916adaf3f4486aa79af9d4028bc8d17399d50c80667ea73a8a5d1341a9160f9422aaeb0b4667f345ea637ac993e80a452cb8341468483b7443f764967264aaebb2cad4513e4922d076a094afebcf1c71b53ba3cfedb736fa2ca5de5c1e2aa88b781d30c27debd28c2f5d83e89107d5214e3bb3fe186412d78cefe951e384f236e55cd3a67fb13c0d6950f097453f76e7679143bd4e62d986ce9dc770");
       assert.ok(JSON.stringify(resp) === JSON.stringify({text: "message"}));
     });
@@ -195,7 +208,7 @@ describe("Crypto", () => {
 
   describe("#generateSecretKey", () => {
     it("not valid algorithm", () => {
-      let generateSecretKey = Crypto.__get__("generateSecretKey");
+      const generateSecretKey = Crypto.__get__("generateSecretKey");
       assert.throws(() => {
         generateSecretKey("ABC");
       }, /Unsupported symmetric algorithm/);
@@ -204,7 +217,7 @@ describe("Crypto", () => {
 
   describe("#loadPrivateKey", () => {
     it("not valid key", () => {
-      let loadPrivateKey = Crypto.__get__("loadPrivateKey");
+      const loadPrivateKey = Crypto.__get__("loadPrivateKey");
       assert.throws(() => {
         loadPrivateKey("./test/res/empty.key");
       }, /Private key content not valid/);
@@ -213,7 +226,7 @@ describe("Crypto", () => {
 
   describe("#readPublicCertificate", () => {
     it("not valid key", () => {
-      let readPublicCertificate = Crypto.__get__("readPublicCertificate");
+      const readPublicCertificate = Crypto.__get__("readPublicCertificate");
       assert.throws(() => {
         readPublicCertificate("./test/res/empty.key");
       }, /Public certificate content is not valid/);
@@ -221,7 +234,7 @@ describe("Crypto", () => {
   });
 
   describe("#getPrivateKey", () => {
-    let getPrivateKey = Crypto.__get__("getPrivateKey");
+    const getPrivateKey = Crypto.__get__("getPrivateKey");
 
     it("not valid key", () => {
       assert.throws(() => {
@@ -242,7 +255,7 @@ describe("Crypto", () => {
     });
 
     it("valid p12", () => {
-      let pk = getPrivateKey("./test/res/test_key_container.p12", "mykeyalias", "Password1");
+      const pk = getPrivateKey("./test/res/test_key_container.p12", "mykeyalias", "Password1");
       assert.ok(pk);
     });
 
@@ -260,7 +273,7 @@ describe("Crypto", () => {
       crypto = new Crypto(testConfig);
     });
     it("without options", () => {
-      let params = crypto.newEncryptionParams();
+      const params = crypto.newEncryptionParams();
       assert.ok(params.iv);
       assert.ok(params.secretKey);
       assert.ok(params.encryptedKey);
@@ -274,21 +287,21 @@ describe("Crypto", () => {
   });
 
   describe("#createOAEPOptions", () => {
-    let createOAEPOptions = Crypto.__get__("createOAEPOptions");
+    const createOAEPOptions = Crypto.__get__("createOAEPOptions");
 
     it("not valid asymmetricCipher", () => {
       assert.ok(!createOAEPOptions("foobar"));
     });
 
     it("valid asymmetricCipher and oaepHashingAlgorithm", () => {
-      let opts = createOAEPOptions("OAEP", "SHA-256");
+      const opts = createOAEPOptions("OAEP", "SHA-256");
       assert.ok(opts.md);
       assert.ok(opts.mgf1);
     });
   });
 
   describe("#computePublicFingerprint", () => {
-    let computePublicFingerprint = Crypto.__get__("computePublicFingerprint");
+    const computePublicFingerprint = Crypto.__get__("computePublicFingerprint");
     let crypto;
     before(() => {
       crypto = new Crypto(testConfig);
