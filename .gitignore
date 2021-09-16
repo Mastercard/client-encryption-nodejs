@@ -74,3 +74,4 @@ test-results.xml
 #Sonar
 .scannerwork
 sonar-*
+!sonar-project.properties

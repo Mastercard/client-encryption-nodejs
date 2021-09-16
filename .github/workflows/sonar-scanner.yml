@@ -3,15 +3,13 @@ name: Sonar
   push:
     branches:
       - main
-  pull_request_target:
-    types:
-      - opened
-      - synchronize
-      - reopened
+  pull_request:
+    branches:
+      - main
   schedule:
     - cron: 0 16 * * *
 jobs:
-  build:
+  sonarcloud:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -32,11 +30,6 @@ jobs:
           SONAR_TOKEN: '${{ secrets.SONAR_TOKEN }}'
         with:
           args: >
-            -Dsonar.organization=mastercard
-            -Dsonar.projectName=client-encryption-nodejs
-            -Dsonar.projectKey=Mastercard_client-encryption-nodejs
             -Dsonar.sources=./lib -Dsonar.tests=./test
             -Dsonar.coverage.jacoco.xmlReportPaths=test-results.xml
             -Dsonar.javascript.lcov.reportPaths=.nyc_output/coverage.lcov
-            -Dsonar.host.url=https://sonarcloud.io  -Dsonar.login=${{
-            secrets.SONAR_TOKEN }}
