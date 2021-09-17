@@ -22,14 +22,14 @@ describe("MC API Service", () => {
     });
 
     it("callApi intercepted", function (done) {
-      let postBody = {
+      const postBody = {
         elem1: {
           encryptedData: {
             accountNumber: "5123456789012345"
           }
         }
       };
-      let service = {
+      const service = {
         ApiClient: {
           instance: {
             callApi: function () {
@@ -38,7 +38,7 @@ describe("MC API Service", () => {
           }
         }
       };
-      let mcService = new MCService(service, testConfig);
+      const mcService = new MCService(service, testConfig);
       // simulate callApi call from client
       service.ApiClient.instance.callApi.call(mcService, "/resource", 'POST',
         null, null, null, {test: "header"}, null, postBody, function cb(error, data) {
@@ -52,7 +52,7 @@ describe("MC API Service", () => {
     });
 
     it("callApi intercepted, without body", function (done) {
-      let service = {
+      const service = {
         ApiClient: {
           instance: {
             callApi: function () {
@@ -61,7 +61,7 @@ describe("MC API Service", () => {
           }
         }
       };
-      let mcService = new MCService(service, testConfig);
+      const mcService = new MCService(service, testConfig);
       // simulate callApi call from client
       service.ApiClient.instance.callApi.call(mcService, "/resource", 'POST',
         null, null, null, {test: "header"}, null, null, function cb(error, data) {

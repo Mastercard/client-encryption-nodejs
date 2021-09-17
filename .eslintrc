@@ -3,6 +3,8 @@ extends:
   - prettier
 env:
   es6: true
+  node: true
+  jest: true
 rules:
   semi: 2
   no-console: 2

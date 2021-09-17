@@ -10,15 +10,15 @@ describe("Field Level Encryption", () => {
   describe("#new FieldLevelEncryption", () => {
 
     it("when valid config", () => {
-      let fle = new FieldLevelEncryption(testConfig);
+      const fle = new FieldLevelEncryption(testConfig);
       assert.ok(fle.crypto);
     });
 
     it("isWithHeader", () => {
-      let config = JSON.parse(JSON.stringify(testConfig));
+      const config = JSON.parse(JSON.stringify(testConfig));
       config["ivHeaderName"] = "ivHeaderName";
       config["encryptedKeyHeaderName"] = "encryptedKeyHeaderName";
-      let fle = new FieldLevelEncryption(config);
+      const fle = new FieldLevelEncryption(config);
       assert.ok(fle.isWithHeader);
     });
 
@@ -26,25 +26,25 @@ describe("Field Level Encryption", () => {
 
 
   describe("#hasConfig", () => {
-    let hasConfig = FieldLevelEncryption.__get__("hasConfig");
+    const hasConfig = FieldLevelEncryption.__get__("hasConfig");
 
     it("when valid config, not found endpoint", () => {
-      let ret = hasConfig(testConfig, "/endpoint");
+      const ret = hasConfig(testConfig, "/endpoint");
       assert.ok(ret === null);
     });
 
     it("when valid config, found endpoint", () => {
-      let ret = hasConfig(testConfig, "/resource");
+      const ret = hasConfig(testConfig, "/resource");
       assert.ok(ret);
     });
 
     it("when config is null", () => {
-      let ret = hasConfig(null, "/resource");
+      const ret = hasConfig(null, "/resource");
       assert.ok(ret == null);
     });
 
     it("when path has wildcard", () => {
-      let ret = hasConfig(testConfig, "https://api.example.com/mappings/0123456");
+      const ret = hasConfig(testConfig, "https://api.example.com/mappings/0123456");
       assert.ok(ret.toEncrypt[0].element === "elem2.encryptedData");
       assert.ok(ret);
     });
@@ -52,27 +52,27 @@ describe("Field Level Encryption", () => {
   });
 
   describe("#elemFromPath", () => {
-    let elemFromPath = FieldLevelEncryption.__get__("elemFromPath");
+    const elemFromPath = FieldLevelEncryption.__get__("elemFromPath");
 
     it("valid path", () => {
-      let res = elemFromPath("elem1.elem2", {elem1: {elem2: "test"}});
+      const res = elemFromPath("elem1.elem2", {elem1: {elem2: "test"}});
       assert.ok(res.node === 'test');
       assert.ok(JSON.stringify(res.parent) === JSON.stringify({elem2: "test"}));
     });
 
     it("not valid path", () => {
-      let res = elemFromPath("elem1.elem2", {elem2: "test"});
+      const res = elemFromPath("elem1.elem2", {elem2: "test"});
       assert.ok(!res);
     });
 
   });
 
   describe("#encrypt", () => {
-    let fle = new FieldLevelEncryption(testConfig);
-    let encrypt = FieldLevelEncryption.__get__("encrypt");
+    const fle = new FieldLevelEncryption(testConfig);
+    const encrypt = FieldLevelEncryption.__get__("encrypt");
 
     it("encrypt body payload", () => {
-      let res = encrypt.call(fle, "/resource", null,
+      const res = encrypt.call(fle, "/resource", null,
         {
           elem1: {
             encryptedData: {
@@ -94,9 +94,9 @@ describe("Field Level Encryption", () => {
 
     it("encrypt body payload with readme config", () => {
       const testConfigReadme = require("./mock/config-readme");
-      let fle = new FieldLevelEncryption(testConfigReadme);
-      let encrypt = FieldLevelEncryption.__get__("encrypt");
-      let res = encrypt.call(fle, "/resource", null,
+      const fle = new FieldLevelEncryption(testConfigReadme);
+      const encrypt = FieldLevelEncryption.__get__("encrypt");
+      const res = encrypt.call(fle, "/resource", null,
         {
           path: {
             to: {
@@ -122,11 +122,11 @@ describe("Field Level Encryption", () => {
     });
 
     it("encrypt with header", () => {
-      let header = {};
-      let headerConfig = require("./mock/config-header");
-      let fle = new FieldLevelEncryption(headerConfig);
-      let encrypt = FieldLevelEncryption.__get__("encrypt");
-      let res = encrypt.call(fle, "/resource", header,
+      const header = {};
+      const headerConfig = require("./mock/config-header");
+      const fle = new FieldLevelEncryption(headerConfig);
+      const encrypt = FieldLevelEncryption.__get__("encrypt");
+      const res = encrypt.call(fle, "/resource", header,
         {
           encrypted_payload: {
             data: {
@@ -144,38 +144,67 @@ describe("Field Level Encryption", () => {
 
     it("encrypt when config not found", () => {
 
-      let body = {
+      const body = {
         elem1: {
           encryptedData: {
             accountNumber: "5123456789012345"
           }
         }
       };
-      let res = encrypt.call(fle, "/not-exists", null, body);
+      const res = encrypt.call(fle, "/not-exists", null, body);
       assert.ok(res.header === null);
       assert.ok(JSON.stringify(res.body) === JSON.stringify(body));
+    });
+
+    it("encrypt root arrays", () => {
+      const body = [{}, {}];
+      const fle = new FieldLevelEncryption(testConfig);
+      const res = encrypt.call(fle, "/array-resp", null, body);
+
+      assert.ok(res.body.iv);
+      assert.ok(res.body.encryptedData);
+      assert.ok(res.body.encryptedKey);
+      assert.ok(res.body.publicKeyFingerprint);
+      assert.ok(res.body.oaepHashingAlgorithm);
+
+      const response = {request: {url: "/array-resp"}, body: res.body};
+      const decrypted = FieldLevelEncryption.__get__("decrypt").call(fle, response);
+
+      assert.ok(JSON.stringify(body) === JSON.stringify(decrypted));
+    });
+
+    it("encrypt root arrays with header config", () => {
+      const header = {};
+      const body = [{}, {}];
+      const fle = new FieldLevelEncryption(require("./mock/config-header"));
+      const res = encrypt.call(fle, "/array-resp", header, body);
+
+      const response = {request: {url: "/array-resp"}, body: res.body, header: header};
+      const decrypted = FieldLevelEncryption.__get__("decrypt").call(fle, response);
+
+      assert.ok(JSON.stringify(body) === JSON.stringify(decrypted));
     });
 
   });
 
   describe("#decrypt", () => {
-    let fle = new FieldLevelEncryption(testConfig);
-    let decrypt = FieldLevelEncryption.__get__("decrypt");
+    const fle = new FieldLevelEncryption(testConfig);
+    const decrypt = FieldLevelEncryption.__get__("decrypt");
 
     it("decrypt response", () => {
-      let response = require("./mock/response");
-      let res = decrypt.call(fle, response);
+      const response = require("./mock/response");
+      const res = decrypt.call(fle, response);
       assert.ok(res.foo.accountNumber === "5123456789012345");
       assert.ok(!res.foo.elem1);
-      assert.ok(!res.foo.hasOwnProperty('encryptedData'));
+      assert.ok(!Object.prototype.hasOwnProperty.call(res.foo, 'encryptedData'));
     });
 
     it("decrypt response with readme config", () => {
       const testConfigReadme = require("./mock/config-readme");
-      let fle = new FieldLevelEncryption(testConfigReadme);
-      let decrypt = FieldLevelEncryption.__get__("decrypt");
-      let responseReadme = require("./mock/response-readme");
-      let res = decrypt.call(fle, responseReadme);
+      const fle = new FieldLevelEncryption(testConfigReadme);
+      const decrypt = FieldLevelEncryption.__get__("decrypt");
+      const responseReadme = require("./mock/response-readme");
+      const res = decrypt.call(fle, responseReadme);
       assert(res.path);
       assert(res.path.to);
       assert(res.path.to.foo);
@@ -184,60 +213,96 @@ describe("Field Level Encryption", () => {
     });
 
     it("decrypt response with no valid config", () => {
-      let response = JSON.parse(JSON.stringify(require("./mock/response")));
+      const response = JSON.parse(JSON.stringify(require("./mock/response")));
       delete response.body.elem1;
-      let res = decrypt.call(fle, response);
+      const res = decrypt.call(fle, response);
       assert.ok(res === response.body);
     });
 
     it("decrypt response replacing whole body", () => {
-      let config = JSON.parse(JSON.stringify(testConfig));
+      const config = JSON.parse(JSON.stringify(testConfig));
       config.paths[0].toDecrypt[0].element = "";
       config.paths[0].toDecrypt[0].obj = "encryptedData";
-      let fle = new FieldLevelEncryption(config);
-      let response = require("./mock/response-root");
-      let res = decrypt.call(fle, response);
+      const fle = new FieldLevelEncryption(config);
+      const response = require("./mock/response-root");
+      const res = decrypt.call(fle, response);
       assert.ok(res.encryptedData.accountNumber === "5123456789012345");
       assert.ok(res.notDelete);
     });
 
     it("decrypt with header", () => {
-      let response = require("./mock/response-header");
-      let headerConfig = require("./mock/config-header");
-      let fle = new FieldLevelEncryption(headerConfig);
-      let decrypt = FieldLevelEncryption.__get__("decrypt");
-      let res = decrypt.call(fle, response);
+      const response = require("./mock/response-header");
+      const headerConfig = require("./mock/config-header");
+      const fle = new FieldLevelEncryption(headerConfig);
+      const decrypt = FieldLevelEncryption.__get__("decrypt");
+      const res = decrypt.call(fle, response);
       assert.ok(res.accountNumber === "5123456789012345");
     });
 
     it("decrypt with header when node not found in body", () => {
-      let response = require("./mock/response-header");
-      let headerConfig = require("./mock/config-header");
-      let fle = new FieldLevelEncryption(headerConfig);
-      let decrypt = FieldLevelEncryption.__get__("decrypt");
+      const response = require("./mock/response-header");
+      const headerConfig = require("./mock/config-header");
+      const fle = new FieldLevelEncryption(headerConfig);
+      const decrypt = FieldLevelEncryption.__get__("decrypt");
       delete response.body.encrypted_payload;
       response.body = {test: "foo"};
-      let res = decrypt.call(fle, response);
+      const res = decrypt.call(fle, response);
       assert.ok(JSON.stringify(res) === JSON.stringify({test: "foo"}));
     });
 
     it("decrypt without config", () => {
-      let fle = new FieldLevelEncryption(testConfig);
-      let response = {request: {url: "/foobar"}, body: "body"};
-      let res = decrypt.call(fle, response);
+      const fle = new FieldLevelEncryption(testConfig);
+      const response = {request: {url: "/foobar"}, body: "body"};
+      const res = decrypt.call(fle, response);
       assert.ok(res === "body");
+    });
+
+    it("decrypt root arrays", () => {
+      const response = {
+        request: {url: "/array-resp"},
+        body: {
+          encryptedData:
+            '3496b0c505bcea6a849f8e30b553e6d4',
+          iv: 'ed82c0496e9d5ac769d77bdb2eb27958',
+          encryptedKey:
+            '29ea447b70bdf85dd509b5d4a23dc0ffb29fd1acf50ed0800ec189fbcf1fb813fa075952c3de2915d63ab42f16be2ed46dc27ba289d692778a1d585b589039ba0b25bad326d699c45f6d3cffd77b5ec37fe12e2c5456d49980b2ccf16402e83a8e9765b9b93ca37d4d5181ec3e5327fd58387bc539238f1c20a8bc9f4174f5d032982a59726b3e0b9cf6011d4d7bfc3afaf617e768dea6762750bce07339e3e55fdbd1a1cd12ee6bbfbc3c7a2d7f4e1313410eb0dad13e594a50a842ee1b2d0ff59d641987c417deaa151d679bc892e5c051b48781dbdefe74a12eb2b604b981e0be32ab81d01797117a24fbf6544850eed9b4aefad0eea7b3f5747b20f65d3f',
+          oaepHashingAlgorithm: 'SHA256'
+        }
+      };
+      const fle = new FieldLevelEncryption(testConfig);
+      const res = decrypt.call(fle, response);
+      assert.ok(res instanceof Array);
+      assert.ok(JSON.stringify(res) === "[{},{}]");
+    });
+
+    it("decrypt root arrays to path", () => {
+      const response = {
+        request: {url: "/array-resp2"},
+        body: {
+          encryptedData:
+            '3496b0c505bcea6a849f8e30b553e6d4',
+          iv: 'ed82c0496e9d5ac769d77bdb2eb27958',
+          encryptedKey:
+            '29ea447b70bdf85dd509b5d4a23dc0ffb29fd1acf50ed0800ec189fbcf1fb813fa075952c3de2915d63ab42f16be2ed46dc27ba289d692778a1d585b589039ba0b25bad326d699c45f6d3cffd77b5ec37fe12e2c5456d49980b2ccf16402e83a8e9765b9b93ca37d4d5181ec3e5327fd58387bc539238f1c20a8bc9f4174f5d032982a59726b3e0b9cf6011d4d7bfc3afaf617e768dea6762750bce07339e3e55fdbd1a1cd12ee6bbfbc3c7a2d7f4e1313410eb0dad13e594a50a842ee1b2d0ff59d641987c417deaa151d679bc892e5c051b48781dbdefe74a12eb2b604b981e0be32ab81d01797117a24fbf6544850eed9b4aefad0eea7b3f5747b20f65d3f',
+          oaepHashingAlgorithm: 'SHA256'
+        }
+      };
+      const fle = new FieldLevelEncryption(testConfig);
+      const res = decrypt.call(fle, response);
+      assert.ok(res instanceof Object);
+      assert.ok(JSON.stringify(res) === "{\"path\":{\"to\":{\"foo\":[{},{}]}}}");
     });
 
   });
 
   describe("#setHeader", () => {
-    let headerConfig = require("./mock/config-header");
-    let fle = new FieldLevelEncryption(headerConfig);
-    let setHeader = FieldLevelEncryption.__get__("setHeader");
+    const headerConfig = require("./mock/config-header");
+    const fle = new FieldLevelEncryption(headerConfig);
+    const setHeader = FieldLevelEncryption.__get__("setHeader");
 
     it("set http header from config", () => {
-      let header = {};
-      let params = {
+      const header = {};
+      const params = {
         encoded: {encryptedKey: "encryptedKey", iv: "iv"},
         oaepHashingAlgorithm: "oaepHashingAlgorithm",
         publicKeyFingerprint: "publicKeyFingerprint"
@@ -253,9 +318,9 @@ describe("Field Level Encryption", () => {
 
   describe("#import FieldLevelEncryption", () => {
     it("from mcapi-service", () => {
-      let FieldLevelEncryption = require("..").FieldLevelEncryption;
+      const FieldLevelEncryption = require("..").FieldLevelEncryption;
       assert.ok(FieldLevelEncryption);
-      let fle = new FieldLevelEncryption(testConfig);
+      const fle = new FieldLevelEncryption(testConfig);
       assert.ok(fle.crypto);
     });
   });

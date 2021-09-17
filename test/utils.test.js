@@ -43,27 +43,27 @@ describe("Utils", () => {
     });
 
     it("when empty obj", () => {
-      let res = utils.bytesToString({}, 'hex');
+      const res = utils.bytesToString({}, 'hex');
       assert.ok(res === "");
     });
 
     it("when empty str", () => {
-      let res = utils.bytesToString("", 'hex');
+      const res = utils.bytesToString("", 'hex');
       assert.ok(res === "");
     });
 
     it("when wrong encoding", () => {
-      let res = utils.bytesToString("abc", 'XXX');
+      const res = utils.bytesToString("abc", 'XXX');
       assert.ok(res === "YWJj"); // default is base64
     });
 
     it("when test str hex", () => {
-      let res = utils.bytesToString("test", 'hex');
+      const res = utils.bytesToString("test", 'hex');
       assert.ok(res === "74657374");
     });
 
     it("when test str base64", () => {
-      let res = utils.bytesToString("test", 'base64');
+      const res = utils.bytesToString("test", 'base64');
       assert.ok(res === "dGVzdA==");
     });
 
@@ -84,33 +84,33 @@ describe("Utils", () => {
     });
 
     it("when empty obj", () => {
-      let res = utils.stringToBytes({}, 'hex');
+      const res = utils.stringToBytes({}, 'hex');
       assert.ok(res === "");
     });
 
     it("when empty str", () => {
-      let res = utils.stringToBytes("", 'hex');
+      const res = utils.stringToBytes("", 'hex');
       assert.ok(res === "");
     });
 
     it("when wrong encoding", () => {
-      let res = utils.stringToBytes("dGVzdGluZ3V0aWxz", 'XXX');
+      const res = utils.stringToBytes("dGVzdGluZ3V0aWxz", 'XXX');
       assert.ok(res === "testingutils");
     });
 
     it("when test str hex", () => {
-      let res = utils.stringToBytes("74657374696E677574696C73", 'hex');
+      const res = utils.stringToBytes("74657374696E677574696C73", 'hex');
       assert.ok(res === "testingutils");
     });
 
     it("when test str base64", () => {
-      let res = utils.stringToBytes("dGVzdGluZ3V0aWxz", 'base64');
+      const res = utils.stringToBytes("dGVzdGluZ3V0aWxz", 'base64');
       assert.ok(res === "testingutils");
     });
 
     it("encoding and decoding base64", () => {
-      let str = "dGVzdGluZ3V0aWxz";
-      let res = utils.stringToBytes(str, "base64");
+      const str = "dGVzdGluZ3V0aWxz";
+      const res = utils.stringToBytes(str, "base64");
       assert.ok(utils.bytesToString(res, "base64") === str);
     });
   });
@@ -130,7 +130,7 @@ describe("Utils", () => {
     });
 
     it("when empty obj", () => {
-      let res = utils.jsonToString({});
+      const res = utils.jsonToString({});
       assert.ok(res === "{}");
     });
 
@@ -141,12 +141,12 @@ describe("Utils", () => {
     });
 
     it("correct json from object", () => {
-      let res = utils.jsonToString({field: "value"});
+      const res = utils.jsonToString({field: "value"});
       assert.strictEqual(res, '{"field":"value"}');
     });
 
     it("correct json from string", () => {
-      let res = utils.jsonToString('{"field": "value"}');
+      const res = utils.jsonToString('{"field": "value"}');
       assert.strictEqual(res, '{"field":"value"}');
     });
 
@@ -154,7 +154,7 @@ describe("Utils", () => {
 
   describe("#mutateObjectProperty", () => {
     it("change object value", () => {
-      let obj = {
+      const obj = {
         first: {
           second: {
             third: {
@@ -163,13 +163,13 @@ describe("Utils", () => {
           }
         }
       };
-      let path = "first.second.third";
+      const path = "first.second.third";
       utils.mutateObjectProperty(path, "changed", obj);
       assert.ok(obj.first.second.third === "changed");
     });
 
     it("change object value, change it but not delete", () => {
-      let obj = {
+      const obj = {
         first: {
           second: {
             third: {
@@ -178,13 +178,13 @@ describe("Utils", () => {
           }
         }
       };
-      let path = "first.second.third";
+      const path = "first.second.third";
       utils.mutateObjectProperty(path, "changed", obj);
       assert.ok(obj.first.second.third === "changed");
     });
 
     it("field not found, create it", () => {
-      let obj = {
+      const obj = {
         first: {
           second: {
             third: {
@@ -193,14 +193,14 @@ describe("Utils", () => {
           }
         }
       };
-      let objStr = JSON.stringify({"first": {"second": {"third": {"field": "value"}, "not_exists": "changed"}}});
-      let path = "first.second.not_exists";
+      const objStr = JSON.stringify({"first": {"second": {"third": {"field": "value"}, "not_exists": "changed"}}});
+      const path = "first.second.not_exists";
       utils.mutateObjectProperty(path, "changed", obj);
       assert.ok(objStr === JSON.stringify(obj));
     });
 
     it("field not found, create it, long path", () => {
-      let obj = {
+      const obj = {
         first: {
           second: {
             third: {
@@ -209,7 +209,7 @@ describe("Utils", () => {
           }
         }
       };
-      let objStr = JSON.stringify({
+      const objStr = JSON.stringify({
         "first": {
           "second": {
             "third": {
@@ -229,13 +229,13 @@ describe("Utils", () => {
           }
         }
       });
-      let path = "foo.bar.yet.another.foo.bar";
+      const path = "foo.bar.yet.another.foo.bar";
       utils.mutateObjectProperty(path, "changed", obj);
       assert.ok(objStr === JSON.stringify(obj));
     });
 
     it("first part of path is correct, but field not found, create it", () => {
-      let obj = {
+      const obj = {
         first: {
           second: {
             third: {
@@ -244,7 +244,7 @@ describe("Utils", () => {
           }
         }
       };
-      let objStr = JSON.stringify({
+      const objStr = JSON.stringify({
         "first": {
           "second": {
             "third": {
@@ -256,13 +256,13 @@ describe("Utils", () => {
           }
         }
       });
-      let path = "first.foo.third";
+      const path = "first.foo.third";
       utils.mutateObjectProperty(path, "changed", obj);
       assert.ok(objStr === JSON.stringify(obj));
     });
 
     it("path is null", () => {
-      let obj = {
+      const obj = {
         first: {
           second: {
             third: {
@@ -271,7 +271,7 @@ describe("Utils", () => {
           }
         }
       };
-      let objStr = JSON.stringify(obj);
+      const objStr = JSON.stringify(obj);
       utils.mutateObjectProperty(null, "changed", obj);
       assert.ok(objStr === JSON.stringify(obj));
     });
@@ -284,34 +284,34 @@ describe("Utils", () => {
       assert.doesNotThrow(() => {
         utils.deleteNode(null, null, null);
         utils.deleteNode("path.to.foo", null, null);
-        let body = {};
+        const body = {};
         utils.deleteNode("path.to.foo", body);
         assert.ok(JSON.stringify(body) === JSON.stringify({}));
       });
     });
 
     it("not found path, shouldn't remove it", () => {
-      let body = {path: {to: {foo: {field: "value"}}}};
-      let str = JSON.stringify(body);
+      const body = {path: {to: {foo: {field: "value"}}}};
+      const str = JSON.stringify(body);
       utils.deleteNode("path.to.notfound", body, null);
       assert.ok(str === JSON.stringify(body));
     });
 
     it("path found, should remove it", () => {
-      let body = {path: {to: {foo: {field: "value"}}}};
+      const body = {path: {to: {foo: {field: "value"}}}};
       utils.deleteNode("path.to.foo", body, null);
       assert.ok(JSON.stringify({path: {to: {}}}) === JSON.stringify(body));
     });
 
     it("root path, without properties, shouldn't remove", () => {
-      let body = {path: {to: {foo: {field: "value"}}}};
-      let str = JSON.stringify(body);
+      const body = {path: {to: {foo: {field: "value"}}}};
+      const str = JSON.stringify(body);
       utils.deleteNode("", body, null);
       assert.ok(str === JSON.stringify(body));
     });
 
     it("root path, with properties, should remove the properties", () => {
-      let body = {path: {to: {foo: {field: "value"}}}, prop: "prop", prop2: "prop2"};
+      const body = {path: {to: {foo: {field: "value"}}}, prop: "prop", prop2: "prop2"};
       utils.deleteNode("", body, ["prop", "prop2"]);
       assert.ok(JSON.stringify({"path": {"to": {"foo": {"field": "value"}}}}) === JSON.stringify(body));
     });
