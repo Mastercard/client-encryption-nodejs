@@ -69,7 +69,7 @@ describe("Crypto", () => {
     it("with valid config with private pkcs1 pem keystore", () => {
       const config = JSON.parse(JSON.stringify(testConfig));
       delete config.privateKey;
-      config.keyStore = "./test/res/keys/pkcs1/test_key_pkcs1-1024.pem";
+      config.keyStore = "./test/res/keys/pkcs1/test_key.pem";
       assert.doesNotThrow(() => {
           new Crypto(config);
         }
@@ -79,7 +79,7 @@ describe("Crypto", () => {
     it("with valid config with private pkcs8 pem keystore", () => {
       const config = JSON.parse(JSON.stringify(testConfig));
       delete config.privateKey;
-      config.keyStore = "./test/res/keys/pkcs8/test_key_pkcs8-1024.pem";
+      config.keyStore = "./test/res/keys/pkcs8/test_key.pem";
       assert.doesNotThrow(() => {
           new Crypto(config);
         }
@@ -89,7 +89,7 @@ describe("Crypto", () => {
     it("with valid config with private pkcs8 der keystore", () => {
       const config = JSON.parse(JSON.stringify(testConfig));
       delete config.privateKey;
-      config.keyStore = "./test/res/keys/pkcs8/test_key_pkcs8-1024.der";
+      config.keyStore = "./test/res/keys/pkcs8/test_key.der";
       assert.doesNotThrow(() => {
           new Crypto(config);
         }
@@ -300,12 +300,12 @@ describe("Crypto", () => {
     const getPrivateKeyPem = Crypto.__get__("getPrivateKeyPem");
 
     it("valid pkcs8 pem", () => {
-      const pk = getPrivateKeyPem("./test/res/keys/pkcs8/test_key_pkcs8-1024.pem");
+      const pk = getPrivateKeyPem("./test/res/keys/pkcs8/test_key.pem");
       assert.ok(pk);
     });
 
     it("valid pkcs1 pem", () => {
-      const pk = getPrivateKeyPem("./test/res/keys/pkcs1/test_key_pkcs1-1024.pem");
+      const pk = getPrivateKeyPem("./test/res/keys/pkcs1/test_key.pem");
       assert.ok(pk);
     });
 
@@ -320,7 +320,7 @@ describe("Crypto", () => {
     const getPrivateKeyDer = Crypto.__get__("getPrivateKeyDer");
 
     it("valid pkcs8 der", () => {
-      const pk = getPrivateKeyDer("./test/res/keys/pkcs8/test_key_pkcs8-1024.der");
+      const pk = getPrivateKeyDer("./test/res/keys/pkcs8/test_key.der");
       assert.ok(pk);
     });
 
