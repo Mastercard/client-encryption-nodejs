@@ -57,9 +57,39 @@ describe("Crypto", () => {
     it("with valid config with private keystore", () => {
       const config = JSON.parse(JSON.stringify(testConfig));
       delete config.privateKey;
-      config.keyStore = "./test/res/test_key.p12";
+      config.keyStore = "./test/res/keys/pkcs12/test_key.p12";
       config.keyStoreAlias = "mykeyalias";
       config.keyStorePassword = "Password1";
+      assert.doesNotThrow(() => {
+          new Crypto(config);
+        }
+      );
+    });
+
+    it("with valid config with private pkcs1 pem keystore", () => {
+      const config = JSON.parse(JSON.stringify(testConfig));
+      delete config.privateKey;
+      config.keyStore = "./test/res/keys/pkcs1/test_key.pem";
+      assert.doesNotThrow(() => {
+          new Crypto(config);
+        }
+      );
+    });
+
+    it("with valid config with private pkcs8 pem keystore", () => {
+      const config = JSON.parse(JSON.stringify(testConfig));
+      delete config.privateKey;
+      config.keyStore = "./test/res/keys/pkcs8/test_key.pem";
+      assert.doesNotThrow(() => {
+          new Crypto(config);
+        }
+      );
+    });
+
+    it("with valid config with private pkcs8 der keystore", () => {
+      const config = JSON.parse(JSON.stringify(testConfig));
+      delete config.privateKey;
+      config.keyStore = "./test/res/keys/pkcs8/test_key.der";
       assert.doesNotThrow(() => {
           new Crypto(config);
         }
@@ -233,8 +263,8 @@ describe("Crypto", () => {
     });
   });
 
-  describe("#getPrivateKey", () => {
-    const getPrivateKey = Crypto.__get__("getPrivateKey");
+  describe("#getPrivateKey12", () => {
+    const getPrivateKey = Crypto.__get__("getPrivateKey12");
 
     it("not valid key", () => {
       assert.throws(() => {
@@ -244,30 +274,65 @@ describe("Crypto", () => {
 
     it("empty alias", () => {
       assert.throws(() => {
-        getPrivateKey("./test/res/test_key_container.p12");
+        getPrivateKey("./test/res/keys/pkcs12/test_key_container.p12");
       }, /Key alias is not set/);
     });
 
     it("empty password", () => {
       assert.throws(() => {
-        getPrivateKey("./test/res/test_key_container.p12", "keyalias");
+        getPrivateKey("./test/res/keys/pkcs12/test_key_container.p12", "keyalias");
       }, /Keystore password is not set/);
     });
 
     it("valid p12", () => {
-      const pk = getPrivateKey("./test/res/test_key_container.p12", "mykeyalias", "Password1");
+      const pk = getPrivateKey("./test/res/keys/pkcs12/test_key_container.p12", "mykeyalias", "Password1");
       assert.ok(pk);
     });
 
     it("valid p12, alias not found", () => {
       assert.throws(() => {
-        getPrivateKey("./test/res/test_key_container.p12", "mykeyalias1", "Password1");
+        getPrivateKey("./test/res/keys/pkcs12/test_key_container.p12", "mykeyalias1", "Password1");
       }, /No key found for alias \[mykeyalias1\]/);
     });
   });
 
+  describe("#getPrivateKeyPem", () => {
+    const getPrivateKeyPem = Crypto.__get__("getPrivateKeyPem");
 
-  describe("#newEncryptionParams", () => {
+    it("valid pkcs8 pem", () => {
+      const pk = getPrivateKeyPem("./test/res/keys/pkcs8/test_key.pem");
+      assert.ok(pk);
+    });
+
+    it("valid pkcs1 pem", () => {
+      const pk = getPrivateKeyPem("./test/res/keys/pkcs1/test_key.pem");
+      assert.ok(pk);
+    });
+
+    it("not valid key", () => {
+      assert.throws(() => {
+        getPrivateKeyPem("./test/res/empty.key");
+      }, /pem keystore content is empty/);
+    });
+  });
+
+  describe("#getPrivateKeyDer", () => {
+    const getPrivateKeyDer = Crypto.__get__("getPrivateKeyDer");
+
+    it("valid pkcs8 der", () => {
+      const pk = getPrivateKeyDer("./test/res/keys/pkcs8/test_key.der");
+      assert.ok(pk);
+    });
+
+    it("not valid key", () => {
+      assert.throws(() => {
+        getPrivateKeyDer("./test/res/empty.key");
+      }, /der keystore content is empty/);
+    });
+
+  })
+
+    describe("#newEncryptionParams", () => {
     let crypto;
     before(() => {
       crypto = new Crypto(testConfig);
