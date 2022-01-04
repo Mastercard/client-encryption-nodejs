@@ -1,9 +1,11 @@
+name: broken links?
 'on':
   push:
-    branches: main
+    branches:
+      - "**"
   schedule:
     - cron: 0 16 * * *
-name: broken links?
+  workflow_dispatch:
 jobs:
   linkChecker:
     runs-on: ubuntu-latest
