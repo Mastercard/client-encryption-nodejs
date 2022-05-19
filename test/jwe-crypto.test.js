@@ -190,15 +190,6 @@ describe("JWE Crypto", () => {
 
   });
 
-  describe("#loadPrivateKey", () => {
-    it("not valid key", () => {
-      const loadPrivateKey = Crypto.__get__("loadPrivateKey");
-      assert.throws(() => {
-        loadPrivateKey("./test/res/empty.key");
-      }, /Private key content not valid/);
-    });
-  });
-
   describe("#readPublicCertificate", () => {
     it("not valid key", () => {
       const readPublicCertificate = Crypto.__get__("readPublicCertificate");
@@ -207,75 +198,6 @@ describe("JWE Crypto", () => {
       }, /Public certificate content is not valid/);
     });
   });
-
-  describe("#getPrivateKey12", () => {
-    const getPrivateKey = Crypto.__get__("getPrivateKey12");
-
-    it("not valid key", () => {
-      assert.throws(() => {
-        getPrivateKey("./test/res/empty.key");
-      }, /p12 keystore content is empty/);
-    });
-
-    it("empty alias", () => {
-      assert.throws(() => {
-        getPrivateKey("./test/res/keys/pkcs12/test_key_container.p12");
-      }, /Key alias is not set/);
-    });
-
-    it("empty password", () => {
-      assert.throws(() => {
-        getPrivateKey("./test/res/keys/pkcs12/test_key_container.p12", "keyalias");
-      }, /Keystore password is not set/);
-    });
-
-    it("valid p12", () => {
-      const pk = getPrivateKey("./test/res/keys/pkcs12/test_key_container.p12", "mykeyalias", "Password1");
-      assert.ok(pk);
-    });
-
-    it("valid p12, alias not found", () => {
-      assert.throws(() => {
-        getPrivateKey("./test/res/keys/pkcs12/test_key_container.p12", "mykeyalias1", "Password1");
-      }, /No key found for alias \[mykeyalias1\]/);
-    });
-  });
-
-  describe("#getPrivateKeyPem", () => {
-    const getPrivateKeyPem = Crypto.__get__("getPrivateKeyPem");
-
-    it("valid pkcs8 pem", () => {
-      const pk = getPrivateKeyPem("./test/res/keys/pkcs8/test_key.pem");
-      assert.ok(pk);
-    });
-
-    it("valid pkcs1 pem", () => {
-      const pk = getPrivateKeyPem("./test/res/keys/pkcs1/test_key.pem");
-      assert.ok(pk);
-    });
-
-    it("not valid key", () => {
-      assert.throws(() => {
-        getPrivateKeyPem("./test/res/empty.key");
-      }, /pem keystore content is empty/);
-    });
-  });
-
-  describe("#getPrivateKeyDer", () => {
-    const getPrivateKeyDer = Crypto.__get__("getPrivateKeyDer");
-
-    it("valid pkcs8 der", () => {
-      const pk = getPrivateKeyDer("./test/res/keys/pkcs8/test_key.der");
-      assert.ok(pk);
-    });
-
-    it("not valid key", () => {
-      assert.throws(() => {
-        getPrivateKeyDer("./test/res/empty.key");
-      }, /der keystore content is empty/);
-    });
-
-  })
 
   describe("#computePublicFingerprint", () => {
     const computePublicFingerprint = Crypto.__get__("computePublicFingerprint");
