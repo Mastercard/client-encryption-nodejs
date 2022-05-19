@@ -3,6 +3,7 @@ const rewire = require("rewire");
 const FieldLevelEncryption = rewire("../lib/mcapi/fle/field-level-encryption");
 
 const testConfig = require("./mock/config");
+const testConfigJwe = require("./mock/jwe-config");
 
 describe("Field Level Encryption", () => {
 
@@ -69,6 +70,7 @@ describe("Field Level Encryption", () => {
 
   describe("#encrypt", () => {
     const fle = new FieldLevelEncryption(testConfig);
+    const jweFle = new FieldLevelEncryption(testConfigJwe);
     const encrypt = FieldLevelEncryption.__get__("encrypt");
 
     it("encrypt body payload", () => {
@@ -89,6 +91,23 @@ describe("Field Level Encryption", () => {
       assert.ok(res.body.elem1.iv);
       assert.ok(res.body.elem1.oaepHashingAlgorithm);
       assert.ok(res.body.elem1.publicKeyFingerprint);
+      assert.ok(!res.body.elem1.encryptedData.accountNumber);
+    });
+
+    it("jwe encrypt body payload", () => {
+      const res = encrypt.call(jweFle, "/resource", null,
+        {
+          elem1: {
+            encryptedData: {
+              accountNumber: "5123456789012345"
+            },
+            shouldBeThere: "here I'am"
+          }
+        }
+      );
+      assert.ok(res.header === null);
+      assert.ok(res.body.elem1.shouldBeThere);
+      assert.ok(res.body.elem1.encryptedData);
       assert.ok(!res.body.elem1.encryptedData.accountNumber);
     });
 
@@ -189,11 +208,20 @@ describe("Field Level Encryption", () => {
 
   describe("#decrypt", () => {
     const fle = new FieldLevelEncryption(testConfig);
+    const jweFle = new FieldLevelEncryption(testConfigJwe);
     const decrypt = FieldLevelEncryption.__get__("decrypt");
 
     it("decrypt response", () => {
       const response = require("./mock/response");
       const res = decrypt.call(fle, response);
+      assert.ok(res.foo.accountNumber === "5123456789012345");
+      assert.ok(!res.foo.elem1);
+      assert.ok(!Object.prototype.hasOwnProperty.call(res.foo, 'encryptedData'));
+    });
+
+    it("jwe decrypt response", () => {
+      const response = require("./mock/jwe-response");
+      const res = decrypt.call(jweFle, response);
       assert.ok(res.foo.accountNumber === "5123456789012345");
       assert.ok(!res.foo.elem1);
       assert.ok(!Object.prototype.hasOwnProperty.call(res.foo, 'encryptedData'));

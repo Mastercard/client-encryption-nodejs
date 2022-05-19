@@ -3,12 +3,16 @@ const rewire = require("rewire");
 const FieldLevelEncryption = rewire("../lib/mcapi/fle/field-level-encryption");
 
 const testConfig = require("./mock/config");
+const jweTestConfig = require("./mock/jwe-config");
 
 describe("Payload encryption", () => {
 
   const config = JSON.parse(JSON.stringify(testConfig));
   config['encryptedValueFieldName'] = "encryptedValue";
+  const jweConfig = JSON.parse(JSON.stringify(jweTestConfig));
+  jweConfig['encryptedValueFieldName'] = "encryptedValue";
   const fle = new FieldLevelEncryption(config);
+  const jweFle = new FieldLevelEncryption(jweConfig);
   const encryptBody = FieldLevelEncryption.__get__("encryptBody");
   const decryptBody = FieldLevelEncryption.__get__("decryptBody");
 
@@ -32,6 +36,22 @@ describe("Payload encryption", () => {
       assert.ok(body.encryptedData.encryptedKey);
       assert.ok(body.encryptedData.publicKeyFingerprint);
       assert.ok(body.encryptedData.oaepHashingAlgorithm);
+    });
+
+    it("jwe with sibling", () => {
+      const body = {
+        data: {
+          field1: "value1",
+          field2: "value2"
+        },
+        encryptedData: {}
+      };
+      encryptBody.call(jweFle, {
+        element: "data",
+        obj: "encryptedData"
+      }, body);
+      assert.ok(!body.data);
+      assert.ok(body.encryptedData.encryptedValue);
     });
 
     it("destination obj not exists", () => {
@@ -58,6 +78,26 @@ describe("Payload encryption", () => {
       assert.ok(body.encryptedItems.oaepHashingAlgorithm);
     });
 
+    it("jwe destination obj not exists", () => {
+      const body = {
+        itemsToEncrypt: {
+          first: "first",
+          second: "second"
+        },
+        dontEncrypt: {
+          text: "just text..."
+        }
+      };
+      encryptBody.call(jweFle, {
+        element: "itemsToEncrypt",
+        obj: "encryptedItems"
+      }, body);
+      assert.ok(body.dontEncrypt);
+      assert.ok(!body.itemsToEncrypt);
+      assert.ok(body.encryptedItems);
+      assert.ok(body.encryptedItems.encryptedValue);
+    });
+
     it("elem not found", () => {
       const body = {
         itemsToEncrypt: {
@@ -76,6 +116,26 @@ describe("Payload encryption", () => {
       assert.ok(body.itemsToEncrypt);
       assert.ok(!body.encryptedItems);
     });
+
+    it("jwe elem not found", () => {
+      const body = {
+        itemsToEncrypt: {
+          first: "first",
+          second: "second"
+        },
+        dontEncrypt: {
+          text: "just text..."
+        }
+      };
+      encryptBody.call(jweFle, {
+        element: "not.found",
+        obj: "encryptedItems"
+      }, body);
+      assert.ok(body.dontEncrypt);
+      assert.ok(body.itemsToEncrypt);
+      assert.ok(!body.encryptedItems);
+    });
+
 
     it("nested object to encrypt", () => {
       const body = {
@@ -102,6 +162,27 @@ describe("Payload encryption", () => {
       assert.ok(!body.path.to.encryptedData);
     });
 
+    it("jwe nested object to encrypt", () => {
+      const body = {
+        path: {
+          to: {
+            encryptedData: {
+              sensitive: "secret",
+              sensitive2: "secret 2"
+            }
+          }
+        }
+      };
+      encryptBody.call(jweFle, {
+        element: "path.to.encryptedData",
+        obj: "path.to"
+      }, body);
+      assert.ok(body.path);
+      assert.ok(body.path.to);
+      assert.ok(body.path.to.encryptedValue);
+      assert.ok(!body.path.to.encryptedData);
+    });
+
     it("nested object, create different nested object and delete it", () => {
       const body = {
         path: {
@@ -122,12 +203,34 @@ describe("Payload encryption", () => {
       assert.ok(body.path);
       assert.ok(body.path.to);
       assert.ok(body.path.to.encryptedFoo);
-      assert.ok(body.path.to.encryptedFoo);
       assert.ok(body.path.to.encryptedFoo.iv);
       assert.ok(body.path.to.encryptedFoo.encryptedValue);
       assert.ok(body.path.to.encryptedFoo.encryptedKey);
       assert.ok(body.path.to.encryptedFoo.publicKeyFingerprint);
       assert.ok(body.path.to.encryptedFoo.oaepHashingAlgorithm);
+    });
+
+    it("jwe nested object, create different nested object and delete it", () => {
+      const body = {
+        path: {
+          to: {
+            foo: {
+              sensitive: "secret",
+              sensitive2: "secret 2"
+            }
+          }
+        }
+      };
+      encryptBody.call(jweFle, {
+        element: "path.to.foo",
+        obj: "path.to.encryptedFoo"
+      }, body);
+      assert.ok(!body.path.to.foo);
+      assert.ok(body);
+      assert.ok(body.path);
+      assert.ok(body.path.to);
+      assert.ok(body.path.to.encryptedFoo);
+      assert.ok(body.path.to.encryptedFoo.encryptedValue);
     });
 
   });
@@ -161,6 +264,30 @@ describe("Payload encryption", () => {
       assert.ok(body.path.to.foo);
       assert.ok(body.path.to.foo.accountNumber === "5123456789012345");
     });
+
+    it("jwe nested properties, create new obj", () => {
+      const body = {
+        path: {
+          to: {
+            encryptedFoo: {
+              encryptedValue:
+                'eyJraWQiOiJnSUVQd1RxREdmenc0dXd5TElLa3d3UzNnc3c4NW5FWFkwUFA2QllNSW5rPSIsImN0eSI6ImFwcGxpY2F0aW9uL2pzb24iLCJhbGciOiJSU0EtT0FFUC0yNTYiLCJlbmMiOiJBMjU2R0NNIn0.6lSH7gbbarhjRh4YJKqhGZM3zpi33nuUOeBJSVfpVc55WzMnR2gHBcsTUIonAQYm2BE-TwCc4StjydjXzxnUFNsnD0Hx-l5_Ge9QGDr5VsQdt86vkzx2QEM6LKONnUmIE9rC8dA3Rh6UhaM5jo1fDq7awdqxttGqG5haXODC2FRwePgm44foSW8P-T378enucPbMbfgl1nGLA2JWBKPlsPYfSYf87s9FLmGZvJ9wTWH74-Bh_Ie7MvLAyqrpRZ0_dyRFpSTA_pjmt3lfpFCMm3Dk65kH0T01o6bSnxZMfWvrqVx7kiXOrRYVldNm4zqu3puU4_e5rqHKYyceF0DWSw.QPZnTMrNsLpLzqKiGSZZRQ.faGFTTOeLnPGJUTRlLpjE_jD9hrTak9s1wMMXQrFiCf0nBZ7.gdYK250VuTutnxz1ej1MUQ',
+            }
+          }
+        }
+      };
+      decryptBody.call(jweFle, {
+        element: "path.to.encryptedFoo",
+        obj: "path.to.foo"
+      }, body);
+      assert.ok(!body.path.to.encryptedFoo);
+      assert.ok(body);
+      assert.ok(body.path);
+      assert.ok(body.path.to);
+      assert.ok(body.path.to.foo);
+      assert.ok(body.path.to.foo.accountNumber === "5123456789012345");
+    });
+
 
     it("primitive type", () => {
       const body = {
