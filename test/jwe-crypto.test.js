@@ -1,10 +1,16 @@
 const assert = require('assert');
 const rewire = require('rewire');
 const Crypto = rewire("../lib/mcapi/crypto/jwe-crypto");
+const utils = require("../lib/mcapi/utils/utils");
 
 const testConfig = require("./mock/jwe-config");
 
 describe("JWE Crypto", () => {
+  before(function() {
+    if(!utils.nodeVersionSupportsJWE()) {
+      this.skip();
+    }
+  });
 
   describe("#new Crypto", () => {
     it("with empty config", () => {
@@ -223,7 +229,6 @@ describe("JWE Crypto", () => {
       assert.ok("80810fc13a8319fcf0e2ec322c82a4c304b782cc3ce671176343cfe8160c2279",
         computePublicFingerprint.call(crypto, {publicKeyFingerprintType: "publicKey"}));
     });
-
   });
-
 });
+
