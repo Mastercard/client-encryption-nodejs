@@ -13,7 +13,6 @@ describe("Payload encryption", () => {
   const jweConfig = JSON.parse(JSON.stringify(jweTestConfig));
   jweConfig['encryptedValueFieldName'] = "encryptedValue";
   const fle = new FieldLevelEncryption(config);
-  const jweFle = new FieldLevelEncryption(jweConfig);
   const encryptBody = FieldLevelEncryption.__get__("encryptBody");
   const decryptBody = FieldLevelEncryption.__get__("decryptBody");
 
@@ -198,6 +197,7 @@ describe("Payload encryption", () => {
     });
 
     it("jwe with sibling", () => {
+      const jweFle = new FieldLevelEncryption(jweConfig);
       const body = {
         data: {
           field1: "value1",
@@ -214,6 +214,7 @@ describe("Payload encryption", () => {
     });
 
     it("jwe destination obj not exists", () => {
+      const jweFle = new FieldLevelEncryption(jweConfig);
       const body = {
         itemsToEncrypt: {
           first: "first",
@@ -234,6 +235,7 @@ describe("Payload encryption", () => {
     });
 
     it("jwe elem not found", () => {
+      const jweFle = new FieldLevelEncryption(jweConfig);
       const body = {
         itemsToEncrypt: {
           first: "first",
@@ -253,6 +255,7 @@ describe("Payload encryption", () => {
     });
 
     it("jwe nested object to encrypt", () => {
+      const jweFle = new FieldLevelEncryption(jweConfig);
       const body = {
         path: {
           to: {
@@ -274,6 +277,7 @@ describe("Payload encryption", () => {
     });
 
     it("jwe nested object, create different nested object and delete it", () => {
+      const jweFle = new FieldLevelEncryption(jweConfig);
       const body = {
         path: {
           to: {
@@ -306,6 +310,7 @@ describe("Payload encryption", () => {
     });
 
     it("jwe nested properties, create new obj", () => {
+      const jweFle = new FieldLevelEncryption(jweConfig);
       const body = {
         path: {
           to: {

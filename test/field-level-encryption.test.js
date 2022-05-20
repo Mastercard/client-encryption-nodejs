@@ -190,7 +190,6 @@ describe("Field Level Encryption", () => {
 
   describe("#decrypt", () => {
     const fle = new FieldLevelEncryption(testConfig);
-    const jweFle = new FieldLevelEncryption(testConfigJwe);
     const decrypt = FieldLevelEncryption.__get__("decrypt");
 
     it("decrypt response", () => {
@@ -334,10 +333,9 @@ describe("Field Level Encryption", () => {
       }
     });
 
-    const fle = new FieldLevelEncryption(testConfigJwe);
-    const encrypt = FieldLevelEncryption.__get__("encrypt");
-
     it("encrypt body payload", () => {
+      const fle = new FieldLevelEncryption(testConfigJwe);
+      const encrypt = FieldLevelEncryption.__get__("encrypt");
       const res = encrypt.call(fle, "/resource", null,
         {
           elem1: {
@@ -362,10 +360,9 @@ describe("Field Level Encryption", () => {
       }
     });
 
-    const fle = new FieldLevelEncryption(testConfigJwe);
-    const decrypt = FieldLevelEncryption.__get__("decrypt");
-
     it("decrypt response", () => {
+      const fle = new FieldLevelEncryption(testConfigJwe);
+      const decrypt = FieldLevelEncryption.__get__("decrypt");
       const response = require("./mock/jwe-response");
       const res = decrypt.call(fle, response);
       assert.ok(res.foo.accountNumber === "5123456789012345");
