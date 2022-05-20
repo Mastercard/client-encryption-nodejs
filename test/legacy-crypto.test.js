@@ -245,15 +245,6 @@ describe("Legacy Crypto", () => {
     });
   });
 
-  describe("#readPublicCertificate", () => {
-    it("not valid key", () => {
-      const readPublicCertificate = Crypto.__get__("readPublicCertificate");
-      assert.throws(() => {
-        readPublicCertificate("./test/res/empty.key");
-      }, /Public certificate content is not valid/);
-    });
-  });
-
   describe("#newEncryptionParams", () => {
     let crypto;
     before(() => {
@@ -285,33 +276,6 @@ describe("Legacy Crypto", () => {
       assert.ok(opts.md);
       assert.ok(opts.mgf1);
     });
-  });
-
-  describe("#computePublicFingerprint", () => {
-    const computePublicFingerprint = Crypto.__get__("computePublicFingerprint");
-    let crypto;
-    before(() => {
-      crypto = new Crypto(testConfig);
-    });
-
-    it("not valid config", () => {
-      assert.ok(!computePublicFingerprint());
-    });
-
-    it("not valid publicKeyFingerprintType", () => {
-      assert.ok(!computePublicFingerprint({}));
-    });
-
-    it("compute public fingerprint: certificate", () => {
-      assert.ok("80810fc13a8319fcf0e2ec322c82a4c304b782cc3ce671176343cfe8160c2279",
-        computePublicFingerprint.call(crypto, {publicKeyFingerprintType: "certificate"}));
-    });
-
-    it("compute public fingerprint: publicKey", () => {
-      assert.ok("80810fc13a8319fcf0e2ec322c82a4c304b782cc3ce671176343cfe8160c2279",
-        computePublicFingerprint.call(crypto, {publicKeyFingerprintType: "publicKey"}));
-    });
-
   });
 
 });
