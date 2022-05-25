@@ -1,10 +1,8 @@
 const assert = require('assert');
 const rewire = require("rewire");
-const FieldLevelEncryption = rewire("../lib/mcapi/fle/field-level-encryption");
-const utils = require("../lib/mcapi/utils/utils");
+const FieldLevelEncryption = rewire("../lib/mcapi/encryption/field-level-encryption");
 
 const testConfig = require("./mock/config");
-const testConfigJwe = require("./mock/jwe-config");
 
 describe("Field Level Encryption", () => {
 
@@ -79,7 +77,7 @@ describe("Field Level Encryption", () => {
             encryptedData: {
               accountNumber: "5123456789012345"
             },
-            shouldBeThere: "here I'am"
+            shouldBeThere: "shouldBeThere"
           }
         }
       );
@@ -326,49 +324,4 @@ describe("Field Level Encryption", () => {
     });
   });
 
-  describe("#JWE encrypt", () => {
-    before(function() {
-      if(!utils.nodeVersionSupportsJWE()) {
-        this.skip();
-      }
-    });
-
-    it("encrypt body payload", () => {
-      const fle = new FieldLevelEncryption(testConfigJwe);
-      const encrypt = FieldLevelEncryption.__get__("encrypt");
-      const res = encrypt.call(fle, "/resource", null,
-        {
-          elem1: {
-            encryptedData: {
-              accountNumber: "5123456789012345"
-            },
-            shouldBeThere: "here I'am"
-          }
-        }
-      );
-      assert.ok(res.header === null);
-      assert.ok(res.body.elem1.shouldBeThere);
-      assert.ok(res.body.elem1.encryptedData);
-      assert.ok(!res.body.elem1.encryptedData.accountNumber);
-    });
-  });
-
-  describe("#JWE decrypt", () => {
-    before(function() {
-      if(!utils.nodeVersionSupportsJWE()) {
-        this.skip();
-      }
-    });
-
-    it("decrypt response", () => {
-      const fle = new FieldLevelEncryption(testConfigJwe);
-      const decrypt = FieldLevelEncryption.__get__("decrypt");
-      const response = require("./mock/jwe-response");
-      const res = decrypt.call(fle, response);
-      assert.ok(res.foo.accountNumber === "5123456789012345");
-      assert.ok(!res.foo.elem1);
-      assert.ok(!Object.prototype.hasOwnProperty.call(res.foo, 'encryptedData'));
-    });
-
-  });
 });

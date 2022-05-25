@@ -18,6 +18,7 @@
   - [Prerequisites](#prerequisites)
   - [Adding the Library to Your Project](#adding-the-libraries-to-your-project)
   - [Performing Field Level Encryption and Decryption](#performing-field-level-encryption-and-decryption)
+  - [Performing JWE Encryption and Decryption](#performing-jwe-encryption-and-decryption)
   - [Integrating with OpenAPI Generator API Client Libraries](#integrating-with-openapi-generator-api-client-libraries)
 
 ## Overview <a name="overview"></a>
@@ -27,6 +28,7 @@ NodeJS library for Mastercard API compliant payload encryption/decryption.
 ### Compatibility <a name="compatibility"></a>
 
 - NodeJS 6.12.3+
+- NodeJS 13.14.0+ (JWE features)
 
 There shouldn't be any Node compatibility issues with this package, but it's a good idea to keep your Node versions up-to-date. It is recommended that you use one of the LTS Node.js releases, or one of the more general recent releases. A Node version manager such as `nvm` (*Mac* and *Linux*) or `nvm-windows` is a good way to stay on top of this.
 
@@ -186,7 +188,6 @@ Call `FieldLevelEncryption.decrypt()` with an (encrypted) `response` object with
 Example using the configuration [above](#configuring-the-field-level-encryption):
 
 ```js
-…
 const response = {};
 response.request = { url: "/resource1" };
 response.body = 
@@ -219,6 +220,232 @@ Output:
       }
     }
   }
+}
+```
+### Performing JWE Encryption and Decryption <a name="performing-jwe-encryption-and-decryption"></a>
+#### JWE Encryption and Decryption <a name="jwe-encryption-and-decryption"></a>
+
++ [Introduction](#jwe-introduction)
++ [Configuring the JWE Encryption](#configuring-the-jwe-encryption)
++ [Performing JWE Encryption](#performing-jwe-encryption)
++ [Performing JWE Decryption](#performing-jwe-decryption)
++ [Encrypting Entire Payloads](#encrypting-entire-payloads-jwe)
++ [Decrypting Entire Payloads](#decrypting-entire-payloads-jwe)
+
+##### • Introduction <a name="jwe-introduction"></a>
+
+This library uses [JWE compact serialization](https://datatracker.ietf.org/doc/html/rfc7516#section-7.1) for the encryption of sensitive data.
+The core methods responsible for payload encryption and decryption are `encryptData` and `decryptData` in the `JweEncryption` class.
+
+* `encryptPayload` usage:
+```js
+const jwe = new clientEncryption.JweEncryption(config);
+// … 
+let encryptedRequestPayload = jwe.encrypt(endpoint, header, body);
+```
+
+* `decryptPayload` usage:
+```js
+const jwe = new clientEncryption.JweEncryption(config);
+// … 
+let responsePayload = jwe.decrypt(encryptedResponsePayload);
+```
+
+##### • Configuring the JWE Encryption <a name="configuring-the-jwe-encryption"></a>
+`JweEncryption` needs a config object to instruct how to decrypt/decrypt the payloads. Example:
+
+```js
+const config = {
+  paths: [
+    {
+      path: "/resource1",
+      toEncrypt: [
+        {
+          /* path to element to be encrypted in request json body */
+          element: "path.to.foo",
+          /* path to object where to store encryption fields in request json body */
+          obj: "path.to.encryptedFoo"
+        }],
+      toDecrypt: [
+        {
+          /* path to element where to store decrypted fields in response object */
+          element: "path.to.encryptedFoo",
+          /* path to object with encryption fields */
+          obj: "path.to.foo"
+        }
+      ]
+    }
+  ],
+  mode:'JWE',
+  encryptedValueFieldName: 'encryptedData',
+  publicKeyFingerprintType: 'certificate',
+  encryptionCertificate: "./path/to/public.cert",
+  privateKey: "./path/to/your/private.key"
+};
+```
+Mode must be set to JWE to use JWE encryption
+
+##### • Performing JWE Encryption <a name="performing-jwe-encryption"></a>
+
+Call `JweEncryption.encrypt()` with a JSON request payload, and optional `header` object.
+
+Example using the configuration [above](#configuring-the-field-level-encryption):
+
+```js
+const payload = 
+{
+  "path": {
+    "to": {
+      "foo": {
+        "sensitive": "this is a secret!",
+        "sensitive2": "this is a super-secret!"
+      }
+    }
+  }
+};
+const jwe = new (require('mastercard-client-encryption')).JweEncryption(config);
+// … 
+let responsePayload = jwe.encrypt("/resource1", header, payload);
+```
+
+Output:
+```json
+{
+    "path": {
+        "to": {
+            "encryptedFoo": {
+                "encryptedValue": "eyJraWQiOiI3NjFiMDAzYzFlYWRlM….Y+oPYKZEMTKyYcSIVEgtQw"
+            }
+        }
+    }
+}
+```
+
+##### • Performing JWE Decryption <a name="performing-jwe-decryption"></a>
+
+Call `JweEncryption.decrypt()` with an (encrypted) `response` object with the following fields:
+
+Example using the configuration [above](#configuring-the-jwe-encryption):
+```js
+const response = {};
+response.request = { url: "/resource1" };
+response.body =
+    "{" +
+    "    \"path\": {" +
+    "        \"to\": {" +
+    "            \"encryptedFoo\": {" +
+    "                \"encryptedValue\": \"eyJraWQiOiI3NjFiMDAzYzFlYWRlM….Y+oPYKZEMTKyYcSIVEgtQw\"" +
+    "            }" +
+    "        }" +
+    "    }" +
+    "}";
+const jwe = new (require('mastercard-client-encryption')).JweEncryption(config);
+let responsePayload = jwe.decrypt(response);
+```
+
+Output:
+```json
+{
+    "path": {
+        "to": {
+            "foo": {
+                "sensitiveField1": "sensitiveValue1",
+                "sensitiveField2": "sensitiveValue2"
+            }
+        }
+    }
+}
+```
+
+##### • Encrypting Entire Payloads <a name="encrypting-entire-payloads-jwe"></a>
+
+Entire payloads can be encrypted using the "$" operator as encryption path:
+
+```js
+const config = {
+  paths: [
+    {
+      path: "/resource1",
+      toEncrypt: [
+        {
+          /* path to element to be encrypted in request json body */
+          element: "$",
+          /* path to object where to store encryption fields in request json body */
+          obj: "$"
+        }],
+      toDecrypt: [
+      ]
+    }
+  ],
+  mode:'JWE',
+  encryptedValueFieldName: 'encryptedData',
+  publicKeyFingerprintType: 'certificate',
+  encryptionCertificate: "./path/to/public.cert",
+  privateKey: "./path/to/your/private.key"
+};
+```
+
+Example:
+```js
+const payload = "{" +
+    "    \"sensitiveField1\": \"sensitiveValue1\"," +
+    "    \"sensitiveField2\": \"sensitiveValue2\"" +
+    "}";
+const jwe = new (require('mastercard-client-encryption')).JweEncryption(config);
+// … 
+let responsePayload = jwe.encrypt("/resource1", header, payload);
+```
+
+Output:
+```json
+{
+    "encryptedValue": "eyJraWQiOiI3NjFiMDAzYzFlYWRlM….Y+oPYKZEMTKyYcSIVEgtQw"
+}
+```
+
+##### • Decrypting Entire Payloads <a name="decrypting-entire-payloads-jwe"></a>
+
+Entire payloads can be decrypted using the "$" operator as decryption path:
+
+```js
+const config = {
+  paths: [
+    {
+      path: "/resource1",
+      toEncrypt: [
+        
+      ],
+      toDecrypt: [
+        {
+          /* path to element where to store decrypted fields in response object */
+          element: "$",
+          /* path to object with encryption fields */
+          obj: "$"
+        }],
+    }
+  ],
+  mode:'JWE',
+  encryptedValueFieldName: 'encryptedData',
+  publicKeyFingerprintType: 'certificate',
+  encryptionCertificate: "./path/to/public.cert",
+  privateKey: "./path/to/your/private.key"
+};
+```
+
+Example:
+```js
+const encryptedPayload = "{" +
+    "  \"encryptedValue\": \"eyJraWQiOiI3NjFiMDAzYzFlYWRlM….Y+oPYKZEMTKyYcSIVEgtQw\"" +
+    "}";
+const jwe = new (require('mastercard-client-encryption')).JweEncryption(config);
+let responsePayload = jwe.decrypt(encryptedPayload);
+```
+
+Output:
+```json
+{
+    "sensitiveField1": "sensitiveValue1",
+    "sensitiveField2": "sensitiveValue2"
 }
 ```
 

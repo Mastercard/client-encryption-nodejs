@@ -7,7 +7,7 @@ const testConfig = require("./mock/jwe-config");
 
 describe("JWE Crypto", () => {
   before(function() {
-    if(!utils.nodeVersionSupportsJWE()) {
+    if (!utils.nodeVersionSupportsJWE()) {
       this.skip();
     }
   });
@@ -159,7 +159,7 @@ describe("JWE Crypto", () => {
       let resp = crypto.encryptData({
         data: data
       });
-      resp = resp[testConfig.encryptedValueFieldName].split(".")
+      resp = resp[testConfig.encryptedValueFieldName].split(".");
       assert.ok(resp.length === 5);
       //Header is always constant
       assert.ok(resp[0] === "eyJraWQiOiJnSUVQd1RxREdmenc0dXd5TElLa3d3UzNnc3c4NW5FWFkwUFA2QllNSW5rPSIsImN0eSI6ImFwcGxpY2F0aW9uL2pzb24iLCJhbGciOiJSU0EtT0FFUC0yNTYiLCJlbmMiOiJBMjU2R0NNIn0");
@@ -169,7 +169,7 @@ describe("JWE Crypto", () => {
       assert.ok(resp[4].length === 22);
 
     });
-  })
+  });
 
   describe("#decryptData()", () => {
     let crypto;

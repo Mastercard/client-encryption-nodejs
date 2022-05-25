@@ -1,6 +1,6 @@
 const assert = require('assert');
 const rewire = require('rewire');
-const Crypto = rewire("../lib/mcapi/crypto/legacy-crypto");
+const Crypto = rewire("../lib/mcapi/crypto/field-level-crypto");
 const utils = require("../lib/mcapi/utils/utils");
 
 const testConfig = require("./mock/config");
@@ -9,7 +9,7 @@ const testConfigHeader = require("./mock/config-header");
 const iv = "6f38f3ecd8b92c2fd2537a7235deb9a8";
 const secretKey = "bab78b5ec588274a4dd2a60834efcf60";
 
-describe("Legacy Crypto", () => {
+describe("Field Level Crypto", () => {
 
   describe("#new Crypto", () => {
     it("with empty config", () => {

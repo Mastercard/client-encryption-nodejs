@@ -1,6 +1,7 @@
 const assert = require('assert');
 const rewire = require("rewire");
-const FieldLevelEncryption = rewire("../lib/mcapi/fle/field-level-encryption");
+const FieldLevelEncryption = rewire("../lib/mcapi/encryption/field-level-encryption");
+const JweEncryption = rewire("../lib/mcapi/encryption/jwe-encryption");
 const utils = require("../lib/mcapi/utils/utils");
 
 const testConfig = require("./mock/config");
@@ -197,7 +198,7 @@ describe("Payload encryption", () => {
     });
 
     it("jwe with sibling", () => {
-      const jweFle = new FieldLevelEncryption(jweConfig);
+      const jweFle = new JweEncryption(jweConfig);
       const body = {
         data: {
           field1: "value1",
@@ -214,7 +215,7 @@ describe("Payload encryption", () => {
     });
 
     it("jwe destination obj not exists", () => {
-      const jweFle = new FieldLevelEncryption(jweConfig);
+      const jweFle = new JweEncryption(jweConfig);
       const body = {
         itemsToEncrypt: {
           first: "first",
@@ -235,7 +236,7 @@ describe("Payload encryption", () => {
     });
 
     it("jwe elem not found", () => {
-      const jweFle = new FieldLevelEncryption(jweConfig);
+      const jweFle = new JweEncryption(jweConfig);
       const body = {
         itemsToEncrypt: {
           first: "first",
@@ -255,7 +256,7 @@ describe("Payload encryption", () => {
     });
 
     it("jwe nested object to encrypt", () => {
-      const jweFle = new FieldLevelEncryption(jweConfig);
+      const jweFle = new JweEncryption(jweConfig);
       const body = {
         path: {
           to: {
@@ -277,7 +278,7 @@ describe("Payload encryption", () => {
     });
 
     it("jwe nested object, create different nested object and delete it", () => {
-      const jweFle = new FieldLevelEncryption(jweConfig);
+      const jweFle = new JweEncryption(jweConfig);
       const body = {
         path: {
           to: {
@@ -310,7 +311,7 @@ describe("Payload encryption", () => {
     });
 
     it("jwe nested properties, create new obj", () => {
-      const jweFle = new FieldLevelEncryption(jweConfig);
+      const jweFle = new JweEncryption(jweConfig);
       const body = {
         path: {
           to: {
