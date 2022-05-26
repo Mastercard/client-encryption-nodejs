@@ -5,63 +5,65 @@ module.exports = {
       toEncrypt: [
         {
           element: "elem1.encryptedData",
-          obj: "elem1"
-        }],
+          obj: "elem1",
+        },
+      ],
       toDecrypt: [
         {
           element: "foo.elem1",
-          obj: "foo"
-        }
-      ]
+          obj: "foo",
+        },
+      ],
     },
     {
       path: "/mappings/*",
       toEncrypt: [
         {
           element: "elem2.encryptedData",
-          obj: "elem2"
-        }],
+          obj: "elem2",
+        },
+      ],
       toDecrypt: [
         {
           element: "foo.elem1",
-          obj: "foo"
-        }
-      ]
+          obj: "foo",
+        },
+      ],
     },
     {
       path: "/array-resp$",
       toEncrypt: [
         {
           element: "$",
-          obj: "$"
-        }
+          obj: "$",
+        },
       ],
       toDecrypt: [
         {
           element: "$",
-          obj: "$"
-        }
-      ]
+          obj: "$",
+        },
+      ],
     },
     {
       path: "/array-resp2",
       toEncrypt: [
         {
           element: "$",
-          obj: "$"
-        }
+          obj: "$",
+        },
       ],
       toDecrypt: [
         {
           element: "$",
-          obj: "path.to.foo"
-        }
-      ]
-    }
+          obj: "path.to.foo",
+        },
+      ],
+    },
   ],
-  mode:'JWE',
-  encryptedValueFieldName: 'encryptedData',
-  publicKeyFingerprintType: 'certificate',
+  mode: "JWE",
+  encryptedValueFieldName: "encryptedData",
+  publicKeyFingerprintType: "certificate",
   encryptionCertificate: "./test/res/test_certificate.cert",
-  privateKey: "./test/res/test_key.der"
+  privateKey: "./test/res/test_key.der",
 };

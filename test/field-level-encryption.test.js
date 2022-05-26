@@ -1,13 +1,13 @@
-const assert = require('assert');
+const assert = require("assert");
 const rewire = require("rewire");
-const FieldLevelEncryption = rewire("../lib/mcapi/encryption/field-level-encryption");
+const FieldLevelEncryption = rewire(
+  "../lib/mcapi/encryption/field-level-encryption"
+);
 
 const testConfig = require("./mock/config");
 
 describe("Field Level Encryption", () => {
-
   describe("#new FieldLevelEncryption", () => {
-
     it("when valid config", () => {
       const fle = new FieldLevelEncryption(testConfig);
       assert.ok(fle.crypto);
@@ -20,9 +20,7 @@ describe("Field Level Encryption", () => {
       const fle = new FieldLevelEncryption(config);
       assert.ok(fle.isWithHeader);
     });
-
   });
-
 
   describe("#hasConfig", () => {
     const hasConfig = FieldLevelEncryption.__get__("hasConfig");
@@ -43,27 +41,30 @@ describe("Field Level Encryption", () => {
     });
 
     it("when path has wildcard", () => {
-      const ret = hasConfig(testConfig, "https://api.example.com/mappings/0123456");
+      const ret = hasConfig(
+        testConfig,
+        "https://api.example.com/mappings/0123456"
+      );
       assert.ok(ret.toEncrypt[0].element === "elem2.encryptedData");
       assert.ok(ret);
     });
-
   });
 
   describe("#elemFromPath", () => {
     const elemFromPath = FieldLevelEncryption.__get__("elemFromPath");
 
     it("valid path", () => {
-      const res = elemFromPath("elem1.elem2", {elem1: {elem2: "test"}});
-      assert.ok(res.node === 'test');
-      assert.ok(JSON.stringify(res.parent) === JSON.stringify({elem2: "test"}));
+      const res = elemFromPath("elem1.elem2", { elem1: { elem2: "test" } });
+      assert.ok(res.node === "test");
+      assert.ok(
+        JSON.stringify(res.parent) === JSON.stringify({ elem2: "test" })
+      );
     });
 
     it("not valid path", () => {
-      const res = elemFromPath("elem1.elem2", {elem2: "test"});
+      const res = elemFromPath("elem1.elem2", { elem2: "test" });
       assert.ok(!res);
     });
-
   });
 
   describe("#encrypt", () => {
@@ -71,16 +72,14 @@ describe("Field Level Encryption", () => {
     const encrypt = FieldLevelEncryption.__get__("encrypt");
 
     it("encrypt body payload", () => {
-      const res = encrypt.call(fle, "/resource", null,
-        {
-          elem1: {
-            encryptedData: {
-              accountNumber: "5123456789012345"
-            },
-            shouldBeThere: "shouldBeThere"
-          }
-        }
-      );
+      const res = encrypt.call(fle, "/resource", null, {
+        elem1: {
+          encryptedData: {
+            accountNumber: "5123456789012345",
+          },
+          shouldBeThere: "shouldBeThere",
+        },
+      });
       assert.ok(res.header === null);
       assert.ok(res.body.elem1.shouldBeThere);
       assert.ok(res.body.elem1.encryptedData);
@@ -95,18 +94,16 @@ describe("Field Level Encryption", () => {
       const testConfigReadme = require("./mock/config-readme");
       const fle = new FieldLevelEncryption(testConfigReadme);
       const encrypt = FieldLevelEncryption.__get__("encrypt");
-      const res = encrypt.call(fle, "/resource", null,
-        {
-          path: {
-            to: {
-              encryptedData: {
-                sensitive: "this is a secret",
-                sensitive2: "this is a super secret!"
-              }
-            }
-          }
-        }
-      );
+      const res = encrypt.call(fle, "/resource", null, {
+        path: {
+          to: {
+            encryptedData: {
+              sensitive: "this is a secret",
+              sensitive2: "this is a super secret!",
+            },
+          },
+        },
+      });
       assert.ok(res.header === null);
       assert.ok(!res.body.path.to.encryptedData.sensitive);
       assert.ok(!res.body.path.to.encryptedData.sensitive2);
@@ -125,30 +122,29 @@ describe("Field Level Encryption", () => {
       const headerConfig = require("./mock/config-header");
       const fle = new FieldLevelEncryption(headerConfig);
       const encrypt = FieldLevelEncryption.__get__("encrypt");
-      const res = encrypt.call(fle, "/resource", header,
-        {
-          encrypted_payload: {
-            data: {
-              accountNumber: "5123456789012345"
-            }
-          }
-        }
-      );
+      const res = encrypt.call(fle, "/resource", header, {
+        encrypted_payload: {
+          data: {
+            accountNumber: "5123456789012345",
+          },
+        },
+      });
       assert.ok(res.header[headerConfig.encryptedKeyHeaderName]);
       assert.ok(res.header[headerConfig.ivHeaderName]);
       assert.ok(res.header[headerConfig.oaepHashingAlgorithmHeaderName]);
       assert.ok(res.header[headerConfig.publicKeyFingerprintHeaderName]);
-      assert.ok(res.body.encrypted_payload.data.length > "5123456789012345".length);
+      assert.ok(
+        res.body.encrypted_payload.data.length > "5123456789012345".length
+      );
     });
 
     it("encrypt when config not found", () => {
-
       const body = {
         elem1: {
           encryptedData: {
-            accountNumber: "5123456789012345"
-          }
-        }
+            accountNumber: "5123456789012345",
+          },
+        },
       };
       const res = encrypt.call(fle, "/not-exists", null, body);
       assert.ok(res.header === null);
@@ -166,8 +162,11 @@ describe("Field Level Encryption", () => {
       assert.ok(res.body.publicKeyFingerprint);
       assert.ok(res.body.oaepHashingAlgorithm);
 
-      const response = {request: {url: "/array-resp"}, body: res.body};
-      const decrypted = FieldLevelEncryption.__get__("decrypt").call(fle, response);
+      const response = { request: { url: "/array-resp" }, body: res.body };
+      const decrypted = FieldLevelEncryption.__get__("decrypt").call(
+        fle,
+        response
+      );
 
       assert.ok(JSON.stringify(body) === JSON.stringify(decrypted));
     });
@@ -178,12 +177,18 @@ describe("Field Level Encryption", () => {
       const fle = new FieldLevelEncryption(require("./mock/config-header"));
       const res = encrypt.call(fle, "/array-resp", header, body);
 
-      const response = {request: {url: "/array-resp"}, body: res.body, header: header};
-      const decrypted = FieldLevelEncryption.__get__("decrypt").call(fle, response);
+      const response = {
+        request: { url: "/array-resp" },
+        body: res.body,
+        header: header,
+      };
+      const decrypted = FieldLevelEncryption.__get__("decrypt").call(
+        fle,
+        response
+      );
 
       assert.ok(JSON.stringify(body) === JSON.stringify(decrypted));
     });
-
   });
 
   describe("#decrypt", () => {
@@ -195,7 +200,9 @@ describe("Field Level Encryption", () => {
       const res = decrypt.call(fle, response);
       assert.ok(res.foo.accountNumber === "5123456789012345");
       assert.ok(!res.foo.elem1);
-      assert.ok(!Object.prototype.hasOwnProperty.call(res.foo, 'encryptedData'));
+      assert.ok(
+        !Object.prototype.hasOwnProperty.call(res.foo, "encryptedData")
+      );
     });
 
     it("decrypt response with readme config", () => {
@@ -244,29 +251,28 @@ describe("Field Level Encryption", () => {
       const fle = new FieldLevelEncryption(headerConfig);
       const decrypt = FieldLevelEncryption.__get__("decrypt");
       delete response.body.encrypted_payload;
-      response.body = {test: "foo"};
+      response.body = { test: "foo" };
       const res = decrypt.call(fle, response);
-      assert.ok(JSON.stringify(res) === JSON.stringify({test: "foo"}));
+      assert.ok(JSON.stringify(res) === JSON.stringify({ test: "foo" }));
     });
 
     it("decrypt without config", () => {
       const fle = new FieldLevelEncryption(testConfig);
-      const response = {request: {url: "/foobar"}, body: "body"};
+      const response = { request: { url: "/foobar" }, body: "body" };
       const res = decrypt.call(fle, response);
       assert.ok(res === "body");
     });
 
     it("decrypt root arrays", () => {
       const response = {
-        request: {url: "/array-resp"},
+        request: { url: "/array-resp" },
         body: {
-          encryptedData:
-            '3496b0c505bcea6a849f8e30b553e6d4',
-          iv: 'ed82c0496e9d5ac769d77bdb2eb27958',
+          encryptedData: "3496b0c505bcea6a849f8e30b553e6d4",
+          iv: "ed82c0496e9d5ac769d77bdb2eb27958",
           encryptedKey:
-            '29ea447b70bdf85dd509b5d4a23dc0ffb29fd1acf50ed0800ec189fbcf1fb813fa075952c3de2915d63ab42f16be2ed46dc27ba289d692778a1d585b589039ba0b25bad326d699c45f6d3cffd77b5ec37fe12e2c5456d49980b2ccf16402e83a8e9765b9b93ca37d4d5181ec3e5327fd58387bc539238f1c20a8bc9f4174f5d032982a59726b3e0b9cf6011d4d7bfc3afaf617e768dea6762750bce07339e3e55fdbd1a1cd12ee6bbfbc3c7a2d7f4e1313410eb0dad13e594a50a842ee1b2d0ff59d641987c417deaa151d679bc892e5c051b48781dbdefe74a12eb2b604b981e0be32ab81d01797117a24fbf6544850eed9b4aefad0eea7b3f5747b20f65d3f',
-          oaepHashingAlgorithm: 'SHA256'
-        }
+            "29ea447b70bdf85dd509b5d4a23dc0ffb29fd1acf50ed0800ec189fbcf1fb813fa075952c3de2915d63ab42f16be2ed46dc27ba289d692778a1d585b589039ba0b25bad326d699c45f6d3cffd77b5ec37fe12e2c5456d49980b2ccf16402e83a8e9765b9b93ca37d4d5181ec3e5327fd58387bc539238f1c20a8bc9f4174f5d032982a59726b3e0b9cf6011d4d7bfc3afaf617e768dea6762750bce07339e3e55fdbd1a1cd12ee6bbfbc3c7a2d7f4e1313410eb0dad13e594a50a842ee1b2d0ff59d641987c417deaa151d679bc892e5c051b48781dbdefe74a12eb2b604b981e0be32ab81d01797117a24fbf6544850eed9b4aefad0eea7b3f5747b20f65d3f",
+          oaepHashingAlgorithm: "SHA256",
+        },
       };
       const fle = new FieldLevelEncryption(testConfig);
       const res = decrypt.call(fle, response);
@@ -276,22 +282,20 @@ describe("Field Level Encryption", () => {
 
     it("decrypt root arrays to path", () => {
       const response = {
-        request: {url: "/array-resp2"},
+        request: { url: "/array-resp2" },
         body: {
-          encryptedData:
-            '3496b0c505bcea6a849f8e30b553e6d4',
-          iv: 'ed82c0496e9d5ac769d77bdb2eb27958',
+          encryptedData: "3496b0c505bcea6a849f8e30b553e6d4",
+          iv: "ed82c0496e9d5ac769d77bdb2eb27958",
           encryptedKey:
-            '29ea447b70bdf85dd509b5d4a23dc0ffb29fd1acf50ed0800ec189fbcf1fb813fa075952c3de2915d63ab42f16be2ed46dc27ba289d692778a1d585b589039ba0b25bad326d699c45f6d3cffd77b5ec37fe12e2c5456d49980b2ccf16402e83a8e9765b9b93ca37d4d5181ec3e5327fd58387bc539238f1c20a8bc9f4174f5d032982a59726b3e0b9cf6011d4d7bfc3afaf617e768dea6762750bce07339e3e55fdbd1a1cd12ee6bbfbc3c7a2d7f4e1313410eb0dad13e594a50a842ee1b2d0ff59d641987c417deaa151d679bc892e5c051b48781dbdefe74a12eb2b604b981e0be32ab81d01797117a24fbf6544850eed9b4aefad0eea7b3f5747b20f65d3f',
-          oaepHashingAlgorithm: 'SHA256'
-        }
+            "29ea447b70bdf85dd509b5d4a23dc0ffb29fd1acf50ed0800ec189fbcf1fb813fa075952c3de2915d63ab42f16be2ed46dc27ba289d692778a1d585b589039ba0b25bad326d699c45f6d3cffd77b5ec37fe12e2c5456d49980b2ccf16402e83a8e9765b9b93ca37d4d5181ec3e5327fd58387bc539238f1c20a8bc9f4174f5d032982a59726b3e0b9cf6011d4d7bfc3afaf617e768dea6762750bce07339e3e55fdbd1a1cd12ee6bbfbc3c7a2d7f4e1313410eb0dad13e594a50a842ee1b2d0ff59d641987c417deaa151d679bc892e5c051b48781dbdefe74a12eb2b604b981e0be32ab81d01797117a24fbf6544850eed9b4aefad0eea7b3f5747b20f65d3f",
+          oaepHashingAlgorithm: "SHA256",
+        },
       };
       const fle = new FieldLevelEncryption(testConfig);
       const res = decrypt.call(fle, response);
       assert.ok(res instanceof Object);
-      assert.ok(JSON.stringify(res) === "{\"path\":{\"to\":{\"foo\":[{},{}]}}}");
+      assert.ok(JSON.stringify(res) === '{"path":{"to":{"foo":[{},{}]}}}');
     });
-
   });
 
   describe("#setHeader", () => {
@@ -302,17 +306,22 @@ describe("Field Level Encryption", () => {
     it("set http header from config", () => {
       const header = {};
       const params = {
-        encoded: {encryptedKey: "encryptedKey", iv: "iv"},
+        encoded: { encryptedKey: "encryptedKey", iv: "iv" },
         oaepHashingAlgorithm: "oaepHashingAlgorithm",
-        publicKeyFingerprint: "publicKeyFingerprint"
+        publicKeyFingerprint: "publicKeyFingerprint",
       };
       setHeader.call(fle, header, params);
       assert.ok(header[headerConfig.encryptedKeyHeaderName] === "encryptedKey");
       assert.ok(header[headerConfig.ivHeaderName] === "iv");
-      assert.ok(header[headerConfig.oaepHashingAlgorithmHeaderName] === "oaepHashingAlgorithm");
-      assert.ok(header[headerConfig.publicKeyFingerprintHeaderName] === "publicKeyFingerprint");
+      assert.ok(
+        header[headerConfig.oaepHashingAlgorithmHeaderName] ===
+          "oaepHashingAlgorithm"
+      );
+      assert.ok(
+        header[headerConfig.publicKeyFingerprintHeaderName] ===
+          "publicKeyFingerprint"
+      );
     });
-
   });
 
   describe("#import FieldLevelEncryption", () => {
@@ -323,5 +332,4 @@ describe("Field Level Encryption", () => {
       assert.ok(fle.crypto);
     });
   });
-
 });

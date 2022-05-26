@@ -1,4 +1,5 @@
 # client-encryption-nodejs
+
 [![](https://developer.mastercard.com/_/_/src/global/assets/svg/mcdev-logo-dark.svg)](https://developer.mastercard.com/)
 
 [![](https://github.com/Mastercard/client-encryption-nodejs/workflows/Build%20&%20Test/badge.svg)](https://github.com/Mastercard/client-encryption-nodejs/actions?query=workflow%3A%22Build+%26+Test%22)
@@ -30,7 +31,7 @@ NodeJS library for Mastercard API compliant payload encryption/decryption.
 - NodeJS 6.12.3+
 - NodeJS 13.14.0+ (JWE features)
 
-There shouldn't be any Node compatibility issues with this package, but it's a good idea to keep your Node versions up-to-date. It is recommended that you use one of the LTS Node.js releases, or one of the more general recent releases. A Node version manager such as `nvm` (*Mac* and *Linux*) or `nvm-windows` is a good way to stay on top of this.
+There shouldn't be any Node compatibility issues with this package, but it's a good idea to keep your Node versions up-to-date. It is recommended that you use one of the LTS Node.js releases, or one of the more general recent releases. A Node version manager such as `nvm` (_Mac_ and _Linux_) or `nvm-windows` is a good way to stay on top of this.
 
 ### References <a name="references"></a>
 
@@ -40,7 +41,7 @@ There shouldn't be any Node compatibility issues with this package, but it's a g
 
 ### Prerequisites <a name="prerequisites"></a>
 
-Before using this library, you will need to set up a project in the [Mastercard Developers Portal](https://developer.mastercard.com). 
+Before using this library, you will need to set up a project in the [Mastercard Developers Portal](https://developer.mastercard.com).
 
 As part of this set up, you'll receive:
 
@@ -62,7 +63,7 @@ npm install mastercard-client-encryption
 You can then use it as a regular module:
 
 ```js
-const clientEncryption = require('mastercard-client-encryption');
+const clientEncryption = require("mastercard-client-encryption");
 ```
 
 ### Performing Field Level Encryption and Decryption <a name="performing-field-level-encryption-and-decryption"></a>
@@ -80,7 +81,7 @@ The core methods responsible for payload encryption and decryption are `encryptD
 
 ```js
 const fle = new clientEncryption.FieldLevelEncryption(config);
-// … 
+// …
 let encryptedRequestPayload = fle.encrypt(endpoint, header, body);
 ```
 
@@ -88,7 +89,7 @@ let encryptedRequestPayload = fle.encrypt(endpoint, header, body);
 
 ```js
 const fle = new clientEncryption.FieldLevelEncryption(config);
-// … 
+// …
 let responsePayload = fle.decrypt(encryptedResponsePayload);
 ```
 
@@ -106,25 +107,26 @@ const config = {
           /* path to element to be encrypted in request json body */
           element: "path.to.foo",
           /* path to object where to store encryption fields in request json body */
-          obj: "path.to.encryptedFoo"
-        }],
+          obj: "path.to.encryptedFoo",
+        },
+      ],
       toDecrypt: [
         {
           /* path to element where to store decrypted fields in response object */
           element: "path.to.encryptedFoo",
           /* path to object with encryption fields */
-          obj: "path.to.foo"
-        }
-      ]
-    }
+          obj: "path.to.foo",
+        },
+      ],
+    },
   ],
-  ivFieldName: 'iv',
-  encryptedKeyFieldName: 'encryptedKey',
-  encryptedValueFieldName: 'encryptedData',
-  dataEncoding: 'hex',
+  ivFieldName: "iv",
+  encryptedKeyFieldName: "encryptedKey",
+  encryptedValueFieldName: "encryptedData",
+  dataEncoding: "hex",
   encryptionCertificate: "./path/to/public.cert",
   privateKey: "./path/to/your/private.key",
-  oaepPaddingDigestAlgorithm: 'SHA-256'
+  oaepPaddingDigestAlgorithm: "SHA-256",
 };
 ```
 
@@ -143,19 +145,20 @@ Call `FieldLevelEncryption.encrypt()` with a JSON request payload, and optional 
 Example using the configuration [above](#configuring-the-field-level-encryption):
 
 ```js
-const payload = 
-{
-  "path": {
-    "to": {
-      "foo": {
-        "sensitive": "this is a secret!",
-        "sensitive2": "this is a super-secret!"
-      }
-    }
-  }
+const payload = {
+  path: {
+    to: {
+      foo: {
+        sensitive: "this is a secret!",
+        sensitive2: "this is a super-secret!",
+      },
+    },
+  },
 };
-const fle = new (require('mastercard-client-encryption')).FieldLevelEncryption(config);
-// … 
+const fle = new (require("mastercard-client-encryption").FieldLevelEncryption)(
+  config
+);
+// …
 let responsePayload = fle.encrypt("/resource1", header, payload);
 ```
 
@@ -183,28 +186,31 @@ Call `FieldLevelEncryption.decrypt()` with an (encrypted) `response` object with
 
 - `body`: json payload
 - `request.url`: requesting url
-- `header`: *optional*, header object
+- `header`: _optional_, header object
 
 Example using the configuration [above](#configuring-the-field-level-encryption):
 
 ```js
 const response = {};
 response.request = { url: "/resource1" };
-response.body = 
-{
-  "path": {
-    "to": {
-      "encryptedFoo": {
-        "iv": "e5d313c056c411170bf07ac82ede78c9",
-        "encryptedKey": "e3a56746c0f9109d18b3a2652b76…f16d8afeff36b2479652f5c24ae7bd",
-        "encryptedData": "809a09d78257af5379df0c454dcdf…353ed59fe72fd4a7735c69da4080e74f",
-        "oaepHashingAlgorithm": "SHA256",
-        "publicKeyFingerprint": "80810fc13a8319fcf0e2e…3ce671176343cfe8160c2279"
-      }
-    }
-  }
+response.body = {
+  path: {
+    to: {
+      encryptedFoo: {
+        iv: "e5d313c056c411170bf07ac82ede78c9",
+        encryptedKey:
+          "e3a56746c0f9109d18b3a2652b76…f16d8afeff36b2479652f5c24ae7bd",
+        encryptedData:
+          "809a09d78257af5379df0c454dcdf…353ed59fe72fd4a7735c69da4080e74f",
+        oaepHashingAlgorithm: "SHA256",
+        publicKeyFingerprint: "80810fc13a8319fcf0e2e…3ce671176343cfe8160c2279",
+      },
+    },
+  },
 };
-const fle = new (require('mastercard-client-encryption')).FieldLevelEncryption(config);
+const fle = new (require("mastercard-client-encryption").FieldLevelEncryption)(
+  config
+);
 let responsePayload = fle.decrypt(response);
 ```
 
@@ -222,36 +228,41 @@ Output:
   }
 }
 ```
+
 ### Performing JWE Encryption and Decryption <a name="performing-jwe-encryption-and-decryption"></a>
+
 #### JWE Encryption and Decryption <a name="jwe-encryption-and-decryption"></a>
 
-+ [Introduction](#jwe-introduction)
-+ [Configuring the JWE Encryption](#configuring-the-jwe-encryption)
-+ [Performing JWE Encryption](#performing-jwe-encryption)
-+ [Performing JWE Decryption](#performing-jwe-decryption)
-+ [Encrypting Entire Payloads](#encrypting-entire-payloads-jwe)
-+ [Decrypting Entire Payloads](#decrypting-entire-payloads-jwe)
+- [Introduction](#jwe-introduction)
+- [Configuring the JWE Encryption](#configuring-the-jwe-encryption)
+- [Performing JWE Encryption](#performing-jwe-encryption)
+- [Performing JWE Decryption](#performing-jwe-decryption)
+- [Encrypting Entire Payloads](#encrypting-entire-payloads-jwe)
+- [Decrypting Entire Payloads](#decrypting-entire-payloads-jwe)
 
 ##### • Introduction <a name="jwe-introduction"></a>
 
 This library uses [JWE compact serialization](https://datatracker.ietf.org/doc/html/rfc7516#section-7.1) for the encryption of sensitive data.
 The core methods responsible for payload encryption and decryption are `encryptData` and `decryptData` in the `JweEncryption` class.
 
-* `encryptPayload` usage:
+- `encryptPayload` usage:
+
 ```js
 const jwe = new clientEncryption.JweEncryption(config);
-// … 
+// …
 let encryptedRequestPayload = jwe.encrypt(endpoint, header, body);
 ```
 
-* `decryptPayload` usage:
+- `decryptPayload` usage:
+
 ```js
 const jwe = new clientEncryption.JweEncryption(config);
-// … 
+// …
 let responsePayload = jwe.decrypt(encryptedResponsePayload);
 ```
 
 ##### • Configuring the JWE Encryption <a name="configuring-the-jwe-encryption"></a>
+
 `JweEncryption` needs a config object to instruct how to decrypt/decrypt the payloads. Example:
 
 ```js
@@ -264,25 +275,27 @@ const config = {
           /* path to element to be encrypted in request json body */
           element: "path.to.foo",
           /* path to object where to store encryption fields in request json body */
-          obj: "path.to.encryptedFoo"
-        }],
+          obj: "path.to.encryptedFoo",
+        },
+      ],
       toDecrypt: [
         {
           /* path to element where to store decrypted fields in response object */
           element: "path.to.encryptedFoo",
           /* path to object with encryption fields */
-          obj: "path.to.foo"
-        }
-      ]
-    }
+          obj: "path.to.foo",
+        },
+      ],
+    },
   ],
-  mode:'JWE',
-  encryptedValueFieldName: 'encryptedData',
-  publicKeyFingerprintType: 'certificate',
+  mode: "JWE",
+  encryptedValueFieldName: "encryptedData",
+  publicKeyFingerprintType: "certificate",
   encryptionCertificate: "./path/to/public.cert",
-  privateKey: "./path/to/your/private.key"
+  privateKey: "./path/to/your/private.key",
 };
 ```
+
 Mode must be set to JWE to use JWE encryption
 
 ##### • Performing JWE Encryption <a name="performing-jwe-encryption"></a>
@@ -292,32 +305,32 @@ Call `JweEncryption.encrypt()` with a JSON request payload, and optional `header
 Example using the configuration [above](#configuring-the-field-level-encryption):
 
 ```js
-const payload = 
-{
-  "path": {
-    "to": {
-      "foo": {
-        "sensitive": "this is a secret!",
-        "sensitive2": "this is a super-secret!"
-      }
-    }
-  }
+const payload = {
+  path: {
+    to: {
+      foo: {
+        sensitive: "this is a secret!",
+        sensitive2: "this is a super-secret!",
+      },
+    },
+  },
 };
-const jwe = new (require('mastercard-client-encryption')).JweEncryption(config);
-// … 
+const jwe = new (require("mastercard-client-encryption").JweEncryption)(config);
+// …
 let responsePayload = jwe.encrypt("/resource1", header, payload);
 ```
 
 Output:
+
 ```json
 {
-    "path": {
-        "to": {
-            "encryptedFoo": {
-                "encryptedData": "eyJraWQiOiI3NjFiMDAzYzFlYWRlM….Y+oPYKZEMTKyYcSIVEgtQw"
-            }
-        }
+  "path": {
+    "to": {
+      "encryptedFoo": {
+        "encryptedData": "eyJraWQiOiI3NjFiMDAzYzFlYWRlM….Y+oPYKZEMTKyYcSIVEgtQw"
+      }
     }
+  }
 }
 ```
 
@@ -326,34 +339,36 @@ Output:
 Call `JweEncryption.decrypt()` with an (encrypted) `response` object with the following fields:
 
 Example using the configuration [above](#configuring-the-jwe-encryption):
+
 ```js
 const response = {};
 response.request = { url: "/resource1" };
 response.body =
-    "{" +
-    "    \"path\": {" +
-    "        \"to\": {" +
-    "            \"encryptedFoo\": {" +
-    "                \"encryptedData\": \"eyJraWQiOiI3NjFiMDAzYzFlYWRlM….Y+oPYKZEMTKyYcSIVEgtQw\"" +
-    "            }" +
-    "        }" +
-    "    }" +
-    "}";
-const jwe = new (require('mastercard-client-encryption')).JweEncryption(config);
+  "{" +
+  '    "path": {' +
+  '        "to": {' +
+  '            "encryptedFoo": {' +
+  '                "encryptedData": "eyJraWQiOiI3NjFiMDAzYzFlYWRlM….Y+oPYKZEMTKyYcSIVEgtQw"' +
+  "            }" +
+  "        }" +
+  "    }" +
+  "}";
+const jwe = new (require("mastercard-client-encryption").JweEncryption)(config);
 let responsePayload = jwe.decrypt(response);
 ```
 
 Output:
+
 ```json
 {
-    "path": {
-        "to": {
-            "foo": {
-                "sensitiveField1": "sensitiveValue1",
-                "sensitiveField2": "sensitiveValue2"
-            }
-        }
+  "path": {
+    "to": {
+      "foo": {
+        "sensitiveField1": "sensitiveValue1",
+        "sensitiveField2": "sensitiveValue2"
+      }
     }
+  }
 }
 ```
 
@@ -371,35 +386,38 @@ const config = {
           /* path to element to be encrypted in request json body */
           element: "$",
           /* path to object where to store encryption fields in request json body */
-          obj: "$"
-        }],
-      toDecrypt: [
-      ]
-    }
+          obj: "$",
+        },
+      ],
+      toDecrypt: [],
+    },
   ],
-  mode:'JWE',
-  encryptedValueFieldName: 'encryptedData',
-  publicKeyFingerprintType: 'certificate',
+  mode: "JWE",
+  encryptedValueFieldName: "encryptedData",
+  publicKeyFingerprintType: "certificate",
   encryptionCertificate: "./path/to/public.cert",
-  privateKey: "./path/to/your/private.key"
+  privateKey: "./path/to/your/private.key",
 };
 ```
 
 Example:
+
 ```js
-const payload = "{" +
-    "    \"sensitiveField1\": \"sensitiveValue1\"," +
-    "    \"sensitiveField2\": \"sensitiveValue2\"" +
-    "}";
-const jwe = new (require('mastercard-client-encryption')).JweEncryption(config);
-// … 
+const payload =
+  "{" +
+  '    "sensitiveField1": "sensitiveValue1",' +
+  '    "sensitiveField2": "sensitiveValue2"' +
+  "}";
+const jwe = new (require("mastercard-client-encryption").JweEncryption)(config);
+// …
 let responsePayload = jwe.encrypt("/resource1", header, payload);
 ```
 
 Output:
+
 ```json
 {
-    "encryptedData": "eyJraWQiOiI3NjFiMDAzYzFlYWRlM….Y+oPYKZEMTKyYcSIVEgtQw"
+  "encryptedData": "eyJraWQiOiI3NjFiMDAzYzFlYWRlM….Y+oPYKZEMTKyYcSIVEgtQw"
 }
 ```
 
@@ -412,46 +430,48 @@ const config = {
   paths: [
     {
       path: "/resource1",
-      toEncrypt: [
-        
-      ],
+      toEncrypt: [],
       toDecrypt: [
         {
           /* path to element where to store decrypted fields in response object */
           element: "$",
           /* path to object with encryption fields */
-          obj: "$"
-        }],
-    }
+          obj: "$",
+        },
+      ],
+    },
   ],
-  mode:'JWE',
-  encryptedValueFieldName: 'encryptedData',
-  publicKeyFingerprintType: 'certificate',
+  mode: "JWE",
+  encryptedValueFieldName: "encryptedData",
+  publicKeyFingerprintType: "certificate",
   encryptionCertificate: "./path/to/public.cert",
-  privateKey: "./path/to/your/private.key"
+  privateKey: "./path/to/your/private.key",
 };
 ```
 
 Example:
+
 ```js
-const encryptedPayload = "{" +
-    "  \"encryptedData\": \"eyJraWQiOiI3NjFiMDAzYzFlYWRlM….Y+oPYKZEMTKyYcSIVEgtQw\"" +
-    "}";
-const jwe = new (require('mastercard-client-encryption')).JweEncryption(config);
+const encryptedPayload =
+  "{" +
+  '  "encryptedData": "eyJraWQiOiI3NjFiMDAzYzFlYWRlM….Y+oPYKZEMTKyYcSIVEgtQw"' +
+  "}";
+const jwe = new (require("mastercard-client-encryption").JweEncryption)(config);
 let responsePayload = jwe.decrypt(encryptedPayload);
 ```
 
 Output:
+
 ```json
 {
-    "sensitiveField1": "sensitiveValue1",
-    "sensitiveField2": "sensitiveValue2"
+  "sensitiveField1": "sensitiveValue1",
+  "sensitiveField2": "sensitiveValue2"
 }
 ```
 
 ### Integrating with OpenAPI Generator API Client Libraries <a name="integrating-with-openapi-generator-api-client-libraries"></a>
 
-[OpenAPI Generator](https://github.com/OpenAPITools/openapi-generator) generates API client libraries from [OpenAPI Specs](https://github.com/OAI/OpenAPI-Specification). 
+[OpenAPI Generator](https://github.com/OpenAPITools/openapi-generator) generates API client libraries from [OpenAPI Specs](https://github.com/OAI/OpenAPI-Specification).
 It provides generators and library templates for supporting multiple languages and frameworks.
 
 The **client-encryption-nodejs** library provides the `Service` decorator object you can use with the OpenAPI generated client. This class will take care of encrypting request and decrypting response payloads, but also of updating HTTP headers when needed, automatically, without manually calling `encrypt()`/`decrypt()` functions for each API request or response.
@@ -466,7 +486,7 @@ openapi-generator-cli generate -i openapi-spec.yaml -l javascript -o out
 
 Client library will be generated in the `out` folder.
 
-See also: 
+See also:
 
 - [OpenAPI Generator CLI Installation](https://openapi-generator.tech/docs/installation/)
 
@@ -479,29 +499,31 @@ To use it:
 2. Import the **mastercard-client-encryption** library
 
    ```js
-   const mcapi = require('mastercard-client-encryption');
+   const mcapi = require("mastercard-client-encryption");
    ```
 
 3. Import the OpenAPI Client using the `Service` decorator object:
 
    ```js
-   const openAPIClient = require('./path/to/generated/openapi/client');
-   const config = { /* service configuration object */}
-   
+   const openAPIClient = require("./path/to/generated/openapi/client");
+   const config = {
+     /* service configuration object */
+   };
+
    const service = new mcapi.Service(openAPIClient, config);
    ```
 
-4. Use the `service` object as you are using the `openAPIClient` to make API requests. 
+4. Use the `service` object as you are using the `openAPIClient` to make API requests.
 
    Example:
 
    ```js
    let api = service.ServiceApi();
-   let merchant = /* … */
-   api.createMerchants(merchant, (error, data, response) => {
-     // requests and responses will be automatically encrypted and decrypted
-     // accordingly with the configuration used to instantiate the mcapi.Service.
-     
-     /* use response/data object here */
-   });
+   let merchant =
+     /* … */
+     api.createMerchants(merchant, (error, data, response) => {
+       // requests and responses will be automatically encrypted and decrypted
+       // accordingly with the configuration used to instantiate the mcapi.Service.
+       /* use response/data object here */
+     });
    ```
