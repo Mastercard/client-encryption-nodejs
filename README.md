@@ -364,8 +364,8 @@ Output:
   "path": {
     "to": {
       "foo": {
-        "sensitiveField1": "sensitiveValue1",
-        "sensitiveField2": "sensitiveValue2"
+        "sensitive": "this is a secret",
+        "sensitive2": "this is a super secret!"
       }
     }
   }
@@ -405,8 +405,8 @@ Example:
 ```js
 const payload =
   "{" +
-  '    "sensitiveField1": "sensitiveValue1",' +
-  '    "sensitiveField2": "sensitiveValue2"' +
+  '    "sensitive": "this is a secret",' +
+  '    "sensitive2": "this is a super secret!"' +
   "}";
 const jwe = new (require("mastercard-client-encryption").JweEncryption)(config);
 // …
@@ -464,8 +464,8 @@ Output:
 
 ```json
 {
-  "sensitiveField1": "sensitiveValue1",
-  "sensitiveField2": "sensitiveValue2"
+  "sensitive": "this is a secret",
+  "sensitive2": "this is a super secret!"
 }
 ```
 
