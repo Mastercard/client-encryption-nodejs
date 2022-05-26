@@ -314,7 +314,7 @@ Output:
     "path": {
         "to": {
             "encryptedFoo": {
-                "encryptedValue": "eyJraWQiOiI3NjFiMDAzYzFlYWRlM….Y+oPYKZEMTKyYcSIVEgtQw"
+                "encryptedData": "eyJraWQiOiI3NjFiMDAzYzFlYWRlM….Y+oPYKZEMTKyYcSIVEgtQw"
             }
         }
     }
@@ -334,7 +334,7 @@ response.body =
     "    \"path\": {" +
     "        \"to\": {" +
     "            \"encryptedFoo\": {" +
-    "                \"encryptedValue\": \"eyJraWQiOiI3NjFiMDAzYzFlYWRlM….Y+oPYKZEMTKyYcSIVEgtQw\"" +
+    "                \"encryptedData\": \"eyJraWQiOiI3NjFiMDAzYzFlYWRlM….Y+oPYKZEMTKyYcSIVEgtQw\"" +
     "            }" +
     "        }" +
     "    }" +
@@ -399,7 +399,7 @@ let responsePayload = jwe.encrypt("/resource1", header, payload);
 Output:
 ```json
 {
-    "encryptedValue": "eyJraWQiOiI3NjFiMDAzYzFlYWRlM….Y+oPYKZEMTKyYcSIVEgtQw"
+    "encryptedData": "eyJraWQiOiI3NjFiMDAzYzFlYWRlM….Y+oPYKZEMTKyYcSIVEgtQw"
 }
 ```
 
@@ -435,7 +435,7 @@ const config = {
 Example:
 ```js
 const encryptedPayload = "{" +
-    "  \"encryptedValue\": \"eyJraWQiOiI3NjFiMDAzYzFlYWRlM….Y+oPYKZEMTKyYcSIVEgtQw\"" +
+    "  \"encryptedData\": \"eyJraWQiOiI3NjFiMDAzYzFlYWRlM….Y+oPYKZEMTKyYcSIVEgtQw\"" +
     "}";
 const jwe = new (require('mastercard-client-encryption')).JweEncryption(config);
 let responsePayload = jwe.decrypt(encryptedPayload);

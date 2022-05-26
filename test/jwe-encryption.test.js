@@ -102,12 +102,12 @@ describe("JWE Encryption", () => {
 
   describe("#import JweEncryption", () => {
 
-    // it("from mcapi-service", () => {
-    //   const JweEncryption = require("..").JweEncryption;
-    //   assert.ok(JweEncryption);
-    //   const encryption = new JweEncryption(testConfig);
-    //   assert.ok(encryption.crypto);
-    // });
+    it("from mcapi-service", () => {
+      const JweEncryption = require("..").JweEncryption;
+      assert.ok(JweEncryption);
+      const jwe = new JweEncryption(testConfig);
+      assert.ok(jwe.crypto);
+    });
 
   });
 
