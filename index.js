@@ -6,5 +6,6 @@
  */
 module.exports = {
   Service: require('./lib/mcapi/mcapi-service'),
-  FieldLevelEncryption: require('./lib/mcapi/mcapi-service').FieldLevelEncryption
+  FieldLevelEncryption: require('./lib/mcapi/mcapi-service').FieldLevelEncryption,
+  JweEncryption: require('./lib/mcapi/mcapi-service').JweEncryption
 };

@@ -1,12 +1,8 @@
-const assert = require('assert');
+const assert = require("assert");
 const utils = require("../lib/mcapi/utils/utils");
 
-
 describe("Utils", () => {
-
-
   describe("#isSet", () => {
-
     it("when null", () => {
       assert.ok(utils.isSet(null) === false);
     });
@@ -29,82 +25,79 @@ describe("Utils", () => {
   });
 
   describe("#bytesToString", () => {
-
     it("when null", () => {
       assert.throws(() => {
-        utils.bytesToString(null, 'hex');
+        utils.bytesToString(null, "hex");
       });
     });
 
     it("when undefined", () => {
       assert.throws(() => {
-        utils.bytesToString(undefined, 'hex');
+        utils.bytesToString(undefined, "hex");
       });
     });
 
     it("when empty obj", () => {
-      const res = utils.bytesToString({}, 'hex');
+      const res = utils.bytesToString({}, "hex");
       assert.ok(res === "");
     });
 
     it("when empty str", () => {
-      const res = utils.bytesToString("", 'hex');
+      const res = utils.bytesToString("", "hex");
       assert.ok(res === "");
     });
 
     it("when wrong encoding", () => {
-      const res = utils.bytesToString("abc", 'XXX');
+      const res = utils.bytesToString("abc", "XXX");
       assert.ok(res === "YWJj"); // default is base64
     });
 
     it("when test str hex", () => {
-      const res = utils.bytesToString("test", 'hex');
+      const res = utils.bytesToString("test", "hex");
       assert.ok(res === "74657374");
     });
 
     it("when test str base64", () => {
-      const res = utils.bytesToString("test", 'base64');
+      const res = utils.bytesToString("test", "base64");
       assert.ok(res === "dGVzdA==");
     });
-
   });
 
   describe("#stringToBytes", () => {
-
     it("when null", () => {
       assert.throws(() => {
-        utils.stringToBytes(null, 'hex');
+        utils.stringToBytes(null, "hex");
       });
     });
 
     it("when undefined", () => {
       assert.throws(() => {
-        utils.stringToBytes(undefined, 'hex');
+        utils.stringToBytes(undefined, "hex");
       });
     });
 
     it("when empty obj", () => {
-      const res = utils.stringToBytes({}, 'hex');
+      const res = utils.stringToBytes({}, "hex");
       assert.ok(res === "");
     });
 
     it("when empty str", () => {
-      const res = utils.stringToBytes("", 'hex');
+      const res = utils.stringToBytes("", "hex");
       assert.ok(res === "");
     });
 
     it("when wrong encoding", () => {
-      const res = utils.stringToBytes("dGVzdGluZ3V0aWxz", 'XXX');
+      const res = utils.stringToBytes("dGVzdGluZ3V0aWxz", "XXX");
       assert.ok(res === "testingutils");
     });
 
     it("when test str hex", () => {
-      const res = utils.stringToBytes("74657374696E677574696C73", 'hex');
+      const res = utils.stringToBytes("74657374696E677574696C73", "hex");
       assert.ok(res === "testingutils");
     });
 
     it("when test str base64", () => {
-      const res = utils.stringToBytes("dGVzdGluZ3V0aWxz", 'base64');
+      const res = utils.stringToBytes("dGVzdGluZ3V0aWxz", "base64");
       assert.ok(res === "testingutils");
     });
 
@@ -116,7 +109,6 @@ describe("Utils", () => {
   });
 
   describe("#jsonToString", () => {
-
     it("when null", () => {
       assert.throws(() => {
         utils.jsonToString(null);
@@ -135,13 +127,11 @@ describe("Utils", () => {
     });
 
     it("when empty str", () => {
-      assert.throws(() =>
-        utils.jsonToString("")
-      );
+      assert.throws(() => utils.jsonToString(""));
     });
 
     it("correct json from object", () => {
-      const res = utils.jsonToString({field: "value"});
+      const res = utils.jsonToString({ field: "value" });
       assert.strictEqual(res, '{"field":"value"}');
     });
 
@@ -149,7 +139,6 @@ describe("Utils", () => {
       const res = utils.jsonToString('{"field": "value"}');
       assert.strictEqual(res, '{"field":"value"}');
     });
-
   });
 
   describe("#mutateObjectProperty", () => {
@@ -158,10 +147,10 @@ describe("Utils", () => {
         first: {
           second: {
             third: {
-              field: "value"
-            }
-          }
-        }
+              field: "value",
+            },
+          },
+        },
       };
       const path = "first.second.third";
       utils.mutateObjectProperty(path, "changed", obj);
@@ -173,10 +162,10 @@ describe("Utils", () => {
         first: {
           second: {
             third: {
-              field: "value"
-            }
-          }
-        }
+              field: "value",
+            },
+          },
+        },
       };
       const path = "first.second.third";
       utils.mutateObjectProperty(path, "changed", obj);
@@ -188,12 +177,14 @@ describe("Utils", () => {
         first: {
           second: {
             third: {
-              field: "value"
-            }
-          }
-        }
+              field: "value",
+            },
+          },
+        },
       };
-      const objStr = JSON.stringify({"first": {"second": {"third": {"field": "value"}, "not_exists": "changed"}}});
+      const objStr = JSON.stringify({
+        first: { second: { third: { field: "value" }, not_exists: "changed" } },
+      });
       const path = "first.second.not_exists";
       utils.mutateObjectProperty(path, "changed", obj);
       assert.ok(objStr === JSON.stringify(obj));
@@ -204,30 +195,30 @@ describe("Utils", () => {
         first: {
           second: {
             third: {
-              field: "value"
-            }
-          }
-        }
+              field: "value",
+            },
+          },
+        },
       };
       const objStr = JSON.stringify({
-        "first": {
-          "second": {
-            "third": {
-              "field": "value"
-            }
-          }
+        first: {
+          second: {
+            third: {
+              field: "value",
+            },
+          },
         },
-        "foo": {
-          "bar": {
-            "yet": {
-              "another": {
-                "foo": {
-                  "bar": "changed"
-                }
-              }
-            }
-          }
-        }
+        foo: {
+          bar: {
+            yet: {
+              another: {
+                foo: {
+                  bar: "changed",
+                },
+              },
+            },
+          },
+        },
       });
       const path = "foo.bar.yet.another.foo.bar";
       utils.mutateObjectProperty(path, "changed", obj);
@@ -239,22 +230,22 @@ describe("Utils", () => {
         first: {
           second: {
             third: {
-              field: "value"
-            }
-          }
-        }
+              field: "value",
+            },
+          },
+        },
       };
       const objStr = JSON.stringify({
-        "first": {
-          "second": {
-            "third": {
-              "field": "value"
-            }
+        first: {
+          second: {
+            third: {
+              field: "value",
+            },
           },
-          "foo": {
-            "third": "changed"
-          }
-        }
+          foo: {
+            third: "changed",
+          },
+        },
       });
       const path = "first.foo.third";
       utils.mutateObjectProperty(path, "changed", obj);
@@ -266,20 +257,18 @@ describe("Utils", () => {
         first: {
           second: {
             third: {
-              field: "value"
-            }
-          }
-        }
+              field: "value",
+            },
+          },
+        },
       };
       const objStr = JSON.stringify(obj);
       utils.mutateObjectProperty(null, "changed", obj);
       assert.ok(objStr === JSON.stringify(obj));
     });
-
   });
 
   describe("#deleteNode", () => {
-
     it("with nulls", () => {
       assert.doesNotThrow(() => {
         utils.deleteNode(null, null, null);
@@ -291,32 +280,135 @@ describe("Utils", () => {
     });
 
     it("not found path, shouldn't remove it", () => {
-      const body = {path: {to: {foo: {field: "value"}}}};
+      const body = { path: { to: { foo: { field: "value" } } } };
       const str = JSON.stringify(body);
       utils.deleteNode("path.to.notfound", body, null);
       assert.ok(str === JSON.stringify(body));
     });
 
     it("path found, should remove it", () => {
-      const body = {path: {to: {foo: {field: "value"}}}};
+      const body = { path: { to: { foo: { field: "value" } } } };
       utils.deleteNode("path.to.foo", body, null);
-      assert.ok(JSON.stringify({path: {to: {}}}) === JSON.stringify(body));
+      assert.ok(JSON.stringify({ path: { to: {} } }) === JSON.stringify(body));
     });
 
     it("root path, without properties, shouldn't remove", () => {
-      const body = {path: {to: {foo: {field: "value"}}}};
+      const body = { path: { to: { foo: { field: "value" } } } };
       const str = JSON.stringify(body);
       utils.deleteNode("", body, null);
       assert.ok(str === JSON.stringify(body));
     });
 
     it("root path, with properties, should remove the properties", () => {
-      const body = {path: {to: {foo: {field: "value"}}}, prop: "prop", prop2: "prop2"};
+      const body = {
+        path: { to: { foo: { field: "value" } } },
+        prop: "prop",
+        prop2: "prop2",
+      };
       utils.deleteNode("", body, ["prop", "prop2"]);
-      assert.ok(JSON.stringify({"path": {"to": {"foo": {"field": "value"}}}}) === JSON.stringify(body));
+      assert.ok(
+        JSON.stringify({ path: { to: { foo: { field: "value" } } } }) ===
+          JSON.stringify(body)
+      );
     });
-
   });
 
+  describe("#getPrivateKey12", () => {
+    it("empty alias", () => {
+      assert.throws(() => {
+        utils.getPrivateKey({
+          keyStore: "./test/res/keys/pkcs12/test_key_container.p12",
+        });
+      }, /Key alias is not set/);
+    });
 
+    it("empty password", () => {
+      assert.throws(() => {
+        utils.getPrivateKey({
+          keyStore: "./test/res/keys/pkcs12/test_key_container.p12",
+          keyStoreAlias: "keyalias",
+        });
+      }, /Keystore password is not set/);
+    });
+
+    it("valid p12", () => {
+      const pk = utils.getPrivateKey({
+        keyStore: "./test/res/keys/pkcs12/test_key_container.p12",
+        keyStoreAlias: "mykeyalias",
+        keyStorePassword: "Password1",
+      });
+      assert.ok(pk);
+    });
+
+    it("valid p12, alias not found", () => {
+      assert.throws(() => {
+        utils.getPrivateKey({
+          keyStore: "./test/res/keys/pkcs12/test_key_container.p12",
+          keyStoreAlias: "mykeyalias1",
+          keyStorePassword: "Password1",
+        });
+      }, /No key found for alias \[mykeyalias1\]/);
+    });
+  });
+
+  describe("#getPrivateKeyPem", () => {
+    it("valid pkcs8 pem", () => {
+      const pk = utils.getPrivateKey({
+        keyStore: "./test/res/keys/pkcs8/test_key.pem",
+      });
+      assert.ok(pk);
+    });
+
+    it("valid pkcs1 pem", () => {
+      const pk = utils.getPrivateKey({
+        keyStore: "./test/res/keys/pkcs1/test_key.pem",
+      });
+      assert.ok(pk);
+    });
+
+    it("not valid key", () => {
+      assert.throws(() => {
+        utils.getPrivateKey({ keyStore: "./test/res/empty.pem" });
+      }, /pem keystore content is empty/);
+    });
+  });
+
+  describe("#getPrivateKeyDer", () => {
+    it("valid pkcs8 der", () => {
+      const pk = utils.getPrivateKey({
+        keyStore: "./test/res/keys/pkcs8/test_key.der",
+      });
+      assert.ok(pk);
+    });
+
+    it("not valid key", () => {
+      assert.throws(() => {
+        utils.getPrivateKey({ keyStore: "./test/res/empty.der" });
+      }, /der keystore content is empty/);
+    });
+  });
+
+  describe("#loadPrivateKey", () => {
+    it("not valid key", () => {
+      assert.throws(() => {
+        utils.getPrivateKey({ privateKey: "./test/res/empty.key" });
+      }, /Private key content not valid/);
+    });
+  });
+
+  describe("#readPublicCertificate", () => {
+    it("not valid key", () => {
+      assert.throws(() => {
+        utils.readPublicCertificate("./test/res/empty.key");
+      }, /Public certificate content is not valid/);
+    });
+  });
+
+  describe("#ToEncodedString", () => {
+    it("not valid key", () => {
+      assert.throws(() => {
+        utils.readPublicCertificate("./test/res/empty.key");
+      }, /Public certificate content is not valid/);
+    });
+  });
 });
