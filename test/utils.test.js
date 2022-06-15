@@ -1,5 +1,6 @@
 const assert = require("assert");
 const utils = require("../lib/mcapi/utils/utils");
+const testConfig = require("./mock/config");
 
 describe("Utils", () => {
   describe("#isSet", () => {
@@ -411,4 +412,47 @@ describe("Utils", () => {
       }, /Public certificate content is not valid/);
     });
   });
+
+  describe("#utils.hasConfig", () => {
+
+    it("when valid config, not found endpoint", () => {
+      const ret = utils.hasConfig(testConfig, "/endpoint");
+      assert.ok(ret === null);
+    });
+
+    it("when valid config, found endpoint", () => {
+      const ret = utils.hasConfig(testConfig, "/resource");
+      assert.ok(ret);
+    });
+
+    it("when config is null", () => {
+      const ret = utils.hasConfig(null, "/resource");
+      assert.ok(ret == null);
+    });
+
+    it("when path has wildcard", () => {
+      const ret = utils.hasConfig(
+        testConfig,
+        "https://api.example.com/mappings/0123456"
+      );
+      assert.ok(ret.toEncrypt[0].element === "elem2.encryptedData");
+      assert.ok(ret);
+    });
+  });
+
+  describe("#utils.elemFromPath", () => {
+    it("valid path", () => {
+      const res = utils.elemFromPath("elem1.elem2", { elem1: { elem2: "test" } });
+      assert.ok(res.node === "test");
+      assert.ok(
+        JSON.stringify(res.parent) === JSON.stringify({ elem2: "test" })
+      );
+    });
+
+    it("not valid path", () => {
+      const res = utils.elemFromPath("elem1.elem2", { elem2: "test" });
+      assert.ok(!res);
+    });
+  });
+
 });
