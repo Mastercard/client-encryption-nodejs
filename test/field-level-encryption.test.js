@@ -22,50 +22,6 @@ describe("Field Level Encryption", () => {
     });
   });
 
-  describe("#hasConfig", () => {
-    const hasConfig = FieldLevelEncryption.__get__("hasConfig");
-
-    it("when valid config, not found endpoint", () => {
-      const ret = hasConfig(testConfig, "/endpoint");
-      assert.ok(ret === null);
-    });
-
-    it("when valid config, found endpoint", () => {
-      const ret = hasConfig(testConfig, "/resource");
-      assert.ok(ret);
-    });
-
-    it("when config is null", () => {
-      const ret = hasConfig(null, "/resource");
-      assert.ok(ret == null);
-    });
-
-    it("when path has wildcard", () => {
-      const ret = hasConfig(
-        testConfig,
-        "https://api.example.com/mappings/0123456"
-      );
-      assert.ok(ret.toEncrypt[0].element === "elem2.encryptedData");
-      assert.ok(ret);
-    });
-  });
-
-  describe("#elemFromPath", () => {
-    const elemFromPath = FieldLevelEncryption.__get__("elemFromPath");
-
-    it("valid path", () => {
-      const res = elemFromPath("elem1.elem2", { elem1: { elem2: "test" } });
-      assert.ok(res.node === "test");
-      assert.ok(
-        JSON.stringify(res.parent) === JSON.stringify({ elem2: "test" })
-      );
-    });
-
-    it("not valid path", () => {
-      const res = elemFromPath("elem1.elem2", { elem2: "test" });
-      assert.ok(!res);
-    });
-  });
 
   describe("#encrypt", () => {
     const fle = new FieldLevelEncryption(testConfig);
