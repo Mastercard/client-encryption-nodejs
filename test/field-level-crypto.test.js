@@ -222,7 +222,24 @@ describe("Field Level Crypto", () => {
       assert.ok(resp.iv);
       assert.ok(resp.oaepHashingAlgorithm);
     });
+
+    it("with custom ivFieldName object", () => {
+      const config = JSON.parse(JSON.stringify(testConfig));
+      config.ivFieldName = 'IvCustomName';
+      const crypto = new Crypto(config);
+      const data = JSON.stringify({ text: "message with custom ivFieldName" });
+      const resp = crypto.encryptData({
+        data: data,
+      });
+      assert.ok(resp);
+      assert.ok(resp.encryptedKey);
+      assert.ok(resp.encryptedData);
+      assert.ok(resp.IvCustomName);
+      assert.ok(!resp.iv);
+      assert.ok(resp.oaepHashingAlgorithm);
+    });
   });
+
 
   describe("#decryptData()", () => {
     let crypto;
