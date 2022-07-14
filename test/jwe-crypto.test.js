@@ -92,7 +92,7 @@ describe("JWE Crypto", () => {
       delete config["publicKeyFingerprintType"];
       assert.throws(
         () => new Crypto(config),
-        /Config not valid: propertiesFingerprint should be: 'certificate' or 'publicKey'/
+        /Config not valid: publicKeyFingerprintType should be: 'certificate' or 'publicKey'/
       );
     });
 
@@ -108,14 +108,32 @@ describe("JWE Crypto", () => {
       config.publicKeyFingerprintType = "foobar";
       assert.throws(
         () => new Crypto(config),
-        /Config not valid: propertiesFingerprint should be: 'certificate' or 'publicKey'/
+        /Config not valid: publicKeyFingerprintType should be: 'certificate' or 'publicKey'/
       );
     });
 
-    it("with right publicKeyFingerprintType: certificate", () => {
+    it("with right publicKeyFingerprintType: certificate and dataEncoding: base64", () => {
       const config = JSON.parse(JSON.stringify(testConfig));
       config.publicKeyFingerprintType = "certificate";
+      config.dataEncoding = "base64";
       assert.doesNotThrow(() => new Crypto(config));
+    });
+
+    it("with right publicKeyFingerprintType: certificate and dataEncoding: hex", () => {
+      const config = JSON.parse(JSON.stringify(testConfig));
+      config.publicKeyFingerprintType = "certificate";
+      config.dataEncoding = "hex";
+      assert.doesNotThrow(() => new Crypto(config));
+    });
+
+    it("with right publicKeyFingerprintType: certificate and dataEncoding: null", () => {
+      const config = JSON.parse(JSON.stringify(testConfig));
+      config.publicKeyFingerprintType = "certificate";
+      delete config["dataEncoding"];
+      assert.throws(
+        () => new Crypto(config),
+        /Config not valid: if publicKeyFingerprintType is 'certificate' dataEncoding must be either 'base64' or 'hex'/
+      );
     });
 
     it("with right publicKeyFingerprintType: publicKey", () => {

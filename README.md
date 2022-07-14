@@ -290,7 +290,7 @@ const config = {
   ],
   mode: "JWE",
   encryptedValueFieldName: "encryptedData",
-  publicKeyFingerprintType: "certificate",
+  publicKeyFingerprintType: "publicKey",
   encryptionCertificate: "./path/to/public.cert",
   privateKey: "./path/to/your/private.key",
 };
@@ -394,7 +394,7 @@ const config = {
   ],
   mode: "JWE",
   encryptedValueFieldName: "encryptedData",
-  publicKeyFingerprintType: "certificate",
+  publicKeyFingerprintType: "publicKey",
   encryptionCertificate: "./path/to/public.cert",
   privateKey: "./path/to/your/private.key",
 };
@@ -443,7 +443,7 @@ const config = {
   ],
   mode: "JWE",
   encryptedValueFieldName: "encryptedData",
-  publicKeyFingerprintType: "certificate",
+  publicKeyFingerprintType: "publicKey",
   encryptionCertificate: "./path/to/public.cert",
   privateKey: "./path/to/your/private.key",
 };
