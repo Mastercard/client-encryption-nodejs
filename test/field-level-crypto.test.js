@@ -8,6 +8,25 @@ const testConfigHeader = require("./mock/config-header");
 
 const iv = "6f38f3ecd8b92c2fd2537a7235deb9a8";
 const secretKey = "bab78b5ec588274a4dd2a60834efcf60";
+const encryptionCertificateText = '-----BEGIN CERTIFICATE-----'+
+'MIIDITCCAgmgAwIBAgIJANLIazc8xI4iMA0GCSqGSIb3DQEBBQUAMCcxJTAjBgNV'+
+'BAMMHHd3dy5qZWFuLWFsZXhpcy1hdWZhdXZyZS5jb20wHhcNMTkwMjIxMDg1MTM1'+
+'WhcNMjkwMjE4MDg1MTM1WjAnMSUwIwYDVQQDDBx3d3cuamVhbi1hbGV4aXMtYXVm'+
+'YXV2cmUuY29tMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA9Mp6gEFp'+
+'9E+/1SS5XrUyYKMbE7eU0dyJCfmJPz8YOkOYV7ohqwXQvjlaP/YazZ6bbmYfa2WC'+
+'raOpW0o2BYijHgQ7z2a2Az87rKdAtCpZSKFW82Ijnsw++lx7EABI3tFF282ZV7LT'+
+'13n9m4th5Kldukk9euy+TuJqCvPu4xzE/NE+l4LFMr8rfD47EPQkrun5w/TXwkmJ'+
+'rdnG9ejl3BLQO06Ns6Bs516geiYZ7RYxtI8Xnu0ZC0fpqDqjCPZBTORkiFeLocEP'+
+'RbTgo1H+0xQFNdsMH1/0F1BI+hvdxlbc3+kHZFZFoeBMkR3jC8jDXOXNCMNWb13T'+
+'in6HqPReO0KW8wIDAQABo1AwTjAdBgNVHQ4EFgQUDtqNZacrC6wR53kCpw/BfG2C'+
+'t3AwHwYDVR0jBBgwFoAUDtqNZacrC6wR53kCpw/BfG2Ct3AwDAYDVR0TBAUwAwEB'+
+'/zANBgkqhkiG9w0BAQUFAAOCAQEAJ09tz2BDzSgNOArYtF4lgRtjViKpV7gHVqtc'+
+'3xQT9ujbaxEgaZFPbf7/zYfWZfJggX9T54NTGqo5AXM0l/fz9AZ0bOm03rnF2I/F'+
+'/ewhSlHYzvKiPM+YaswaRo1M1UPPgKpLlRDMO0u5LYiU5ICgCNm13TWgjBlzLpP6'+
+'U4z2iBNq/RWBgYxypi/8NMYZ1RcCrAVSt3QnW6Gp+vW/HrE7KIlAp1gFdme3Xcx1'+
+'vDRpA+MeeEyrnc4UNIqT/4bHGkKlIMKdcjZgrFfEJVFav3eJ4CZ7ZSV6Bx+9yRCL'+
+'DPGlRJLISxgwsOTuUmLOxjotRxO8TdR5e1V+skEtfEctMuSVYA=='+
+'-----END CERTIFICATE-----'
 
 describe("Field Level Crypto", () => {
   describe("#new Crypto", () => {
@@ -169,6 +188,33 @@ describe("Field Level Crypto", () => {
         /Config not valid: found multiple configurations encrypt\/decrypt with root mapping/
       );
     });
+
+    it("With useCertificateContent enabled, without valid encryption certificate content", () => {
+      const config = JSON.parse(JSON.stringify(testConfig));
+      config.useCertificateContent = true;
+      assert.throws(
+        () => new Crypto(config),
+        /Invalid PEM formatted message./
+      );
+    });
+
+    it("With useCertificateContent enabled, with valid encryption certificate content and without private key", () => {
+      const config = JSON.parse(JSON.stringify(testConfig));
+      config.useCertificateContent = true;
+      config.encryptionCertificate = encryptionCertificateText;
+      delete config["privateKey"];
+      assert.doesNotThrow(() => new Crypto(config));
+    });
+
+    it("With useCertificateContent enabled, without encryptionCertificate", () => {
+      const config = JSON.parse(JSON.stringify(testConfig));
+      config.useCertificateContent = true;
+      config.encryptionCertificate = null;
+      assert.throws(
+        () => new Crypto(config),
+        /Config not valid: please check that all the properties are defined/
+      );
+    });
   });
 
   describe("#encryptData()", () => {
@@ -238,6 +284,27 @@ describe("Field Level Crypto", () => {
       assert.ok(!resp.iv);
       assert.ok(resp.oaepHashingAlgorithm);
     });
+
+    it("with useCertificateContent", () => {
+      const config = JSON.parse(JSON.stringify(testConfig));
+      config.ivFieldName = 'IvCustomName';
+      config.useCertificateContent = true;
+      config.encryptionCertificate = encryptionCertificateText;
+      delete config["privateKey"];
+      const crypto = new Crypto(config);
+      const data = JSON.stringify({ text: "message with custom ivFieldName" });
+      const resp = crypto.encryptData({
+        data: data,
+      });
+      assert.ok(resp);
+      assert.ok(resp.encryptedKey);
+      assert.ok(resp.encryptedData);
+      assert.ok(resp.IvCustomName);
+      assert.ok(!resp.iv);
+      assert.ok(resp.oaepHashingAlgorithm);
+    });
+
+
   });
 
 
