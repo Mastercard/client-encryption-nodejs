@@ -64,6 +64,7 @@ module.exports = {
   mode: "JWE",
   encryptedValueFieldName: "encryptedData",
   publicKeyFingerprintType: "certificate",
+  dataEncoding: "base64",
   encryptionCertificate: "./test/res/test_certificate.cert",
   privateKey: "./test/res/test_key.der",
 };

@@ -87,15 +87,6 @@ describe("JWE Crypto", () => {
       });
     });
 
-    it("without publicKeyFingerprintType", () => {
-      const config = JSON.parse(JSON.stringify(testConfig));
-      delete config["publicKeyFingerprintType"];
-      assert.throws(
-        () => new Crypto(config),
-        /Config not valid: propertiesFingerprint should be: 'certificate' or 'publicKey'/
-      );
-    });
-
     it("without publicKeyFingerprintType, but providing the publicKeyFingerprint", () => {
       const config = JSON.parse(JSON.stringify(testConfig));
       delete config["publicKeyFingerprintType"];
@@ -108,14 +99,32 @@ describe("JWE Crypto", () => {
       config.publicKeyFingerprintType = "foobar";
       assert.throws(
         () => new Crypto(config),
-        /Config not valid: propertiesFingerprint should be: 'certificate' or 'publicKey'/
+        /Config not valid: publicKeyFingerprintType should be: 'certificate' or 'publicKey'/
       );
     });
 
-    it("with right publicKeyFingerprintType: certificate", () => {
+    it("with right publicKeyFingerprintType: certificate and dataEncoding: base64", () => {
       const config = JSON.parse(JSON.stringify(testConfig));
       config.publicKeyFingerprintType = "certificate";
+      config.dataEncoding = "base64";
       assert.doesNotThrow(() => new Crypto(config));
+    });
+
+    it("with right publicKeyFingerprintType: certificate and dataEncoding: hex", () => {
+      const config = JSON.parse(JSON.stringify(testConfig));
+      config.publicKeyFingerprintType = "certificate";
+      config.dataEncoding = "hex";
+      assert.doesNotThrow(() => new Crypto(config));
+    });
+
+    it("with right publicKeyFingerprintType: certificate and dataEncoding: null", () => {
+      const config = JSON.parse(JSON.stringify(testConfig));
+      config.publicKeyFingerprintType = "certificate";
+      delete config["dataEncoding"];
+      assert.throws(
+        () => new Crypto(config),
+        /Config not valid: if publicKeyFingerprintType is 'certificate' dataEncoding must be either 'base64' or 'hex'/
+      );
     });
 
     it("with right publicKeyFingerprintType: publicKey", () => {
@@ -246,6 +255,19 @@ describe("JWE Crypto", () => {
         "80810fc13a8319fcf0e2ec322c82a4c304b782cc3ce671176343cfe8160c2279",
         computePublicFingerprint.call(crypto, {
           publicKeyFingerprintType: "publicKey",
+        })
+      );
+    });
+
+    it("compute public fingerprint: defaults to publicKey with publicKeyFingerprintType set", () => {
+      const strippedConfig = JSON.parse(JSON.stringify(testConfig));
+      delete strippedConfig["publicKeyFingerprintType"];
+      delete strippedConfig["dataEncoding"];
+
+      assert.ok(
+        "80810fc13a8319fcf0e2ec322c82a4c304b782cc3ce671176343cfe8160c2279",
+        computePublicFingerprint.call(crypto, {
+          strippedConfig
         })
       );
     });
