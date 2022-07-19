@@ -26,7 +26,7 @@ const encryptionCertificateText = '-----BEGIN CERTIFICATE-----'+
 'U4z2iBNq/RWBgYxypi/8NMYZ1RcCrAVSt3QnW6Gp+vW/HrE7KIlAp1gFdme3Xcx1'+
 'vDRpA+MeeEyrnc4UNIqT/4bHGkKlIMKdcjZgrFfEJVFav3eJ4CZ7ZSV6Bx+9yRCL'+
 'DPGlRJLISxgwsOTuUmLOxjotRxO8TdR5e1V+skEtfEctMuSVYA=='+
-'-----END CERTIFICATE-----'
+'-----END CERTIFICATE-----';
 
 describe("Field Level Crypto", () => {
   describe("#new Crypto", () => {

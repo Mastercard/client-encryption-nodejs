@@ -400,15 +400,7 @@ describe("Utils", () => {
   describe("#readPublicCertificate", () => {
     it("not valid key", () => {
       assert.throws(() => {
-        utils.readPublicCertificate("./test/res/empty.key");
-      }, /Public certificate content is not valid/);
-    });
-  });
-
-  describe("#ToEncodedString", () => {
-    it("not valid key", () => {
-      assert.throws(() => {
-        utils.readPublicCertificate("./test/res/empty.key");
+        utils.readPublicCertificate({encryptionCertificate:"./test/res/empty.key"});
       }, /Public certificate content is not valid/);
     });
   });
