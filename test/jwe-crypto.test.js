@@ -209,12 +209,27 @@ describe("JWE Crypto", () => {
       }, /Input not valid/);
     });
 
-    it("with valid object", () => {
+    it("with valid AES128GCM object", () => {
       const resp = crypto.decryptData(
-        "eyJraWQiOiJnSUVQd1RxREdmenc0dXd5TElLa3d3UzNnc3c4NW5FWFkwUFA2QllNSW5rPSIsImN0eSI6ImFwcGxpY2F0aW9uL2pzb24iLCJhbGciOiJSU0EtT0FFUC0yNTYiLCJlbmMiOiJBMjU2R0NNIn0.SVXykIq7DXb7XxJir8t9FpHNXdpW4sgeRcFX6lMGMPln42tqV3XOEivab3MLFPBp1ZKEV_BsClwVipktyMRsJxaBgmzPHgV9mplR_jD80zGIR9DcJT6Q69rVUdcFymqEpaAGWMq0Ho4Nz2mF0lqd_30DrR7DJ5H_uZ5PlYbBbqE2NRdMn2KAveZ6SHMF4NEUXMeXRZ5X2ZLQslEUz6ShhYBBUaJvLSMrzvxXU8sZ1oWbK66eN53fqsFBN-eXh9hpUtTf1mtXBYmZXE22Mwn_UVCjoGEh1FBhndbcvfnGoI20SrGMQken7HfqvIezNjDbl60ROUQRZSKZMJx89s3pdw.v2WNe6a_InN2-3NDGLJ07Q.JOSJctFh19WmAAClGVK2VI0d.0mvaxcRBa1bHFq6Bw58cIw"
+        "eyJlbmMiOiJBMTI4R0NNIiwiYWxnIjoiUlNBLU9BRVAtMjU2In0.WtvYljbsjdEv-Ttxx1p6PgyIrOsLpj1FMF9NQNhJUAHlKchAo5QImgEgIdgJE7HC2KfpNcHiQVqKKZq_y201FVzpicDkNzlPJr5kIH4Lq-oC5iP0agWeou9yK5vIxFRP__F_B8HSuojBJ3gDYT_KdYffUIHkm_UysNj4PW2RIRlafJ6RKYanVzk74EoKZRG7MIr3pTU6LIkeQUW41qYG8hz6DbGBOh79Nkmq7Oceg0ZwCn1_MruerP-b15SGFkuvOshStT5JJp7OOq82gNAOkMl4fylEj2-vADjP7VSK8GlqrA7u9Tn-a4Q28oy0GOKr1Z-HJgn_CElknwkUTYsWbg.PKl6_kvZ4_4MjmjW.AH6pGFkn7J49hBQcwg.zdyD73TcuveImOy4CRnVpw"
       );
-      assert.ok(JSON.stringify(resp) === JSON.stringify({ text: "message" }));
+      assert.ok(JSON.stringify(resp) === JSON.stringify({ foo: "bar" }));
     });
+
+    it("with valid AES192GCM object", () => {
+      const resp = crypto.decryptData(
+        "eyJlbmMiOiJBMTkyR0NNIiwiYWxnIjoiUlNBLU9BRVAtMjU2In0.FWC8PVaZoR2TRKwKO4syhSJReezVIvtkxU_yKh4qODNvlVr8t8ttvySJ-AjM8xdI6vNyIg9jBMWASG4cE49jT9FYuQ72fP4R-Td4vX8wpB8GonQj40yLqZyfRLDrMgPR20RcQDW2ThzLXsgI55B5l5fpwQ9Nhmx8irGifrFWOcJ_k1dUSBdlsHsYxkjRKMENu5x4H6h12gGZ21aZSPtwAj9msMYnKLdiUbdGmGG_P8a6gPzc9ih20McxZk8fHzXKujjukr_1p5OO4o1N4d3qa-YI8Sns2fPtf7xPHnwi1wipmCC6ThFLU80r3173RXcpyZkF8Y3UacOS9y1f8eUfVQ.JRE7kZLN4Im1Rtdb.eW_lJ-U330n0QHqZnQ._r5xYVvMCrvICwLz4chjdw"
+      );
+      assert.ok(JSON.stringify(resp) === JSON.stringify({ foo: "bar" }));
+    });
+
+    it("with valid AES256GCM object", () => {
+      const resp = crypto.decryptData(
+          "eyJraWQiOiI3NjFiMDAzYzFlYWRlM2E1NDkwZTUwMDBkMzc4ODdiYWE1ZTZlYzBlMjI2YzA3NzA2ZTU5OTQ1MWZjMDMyYTc5IiwiY3R5IjoiYXBwbGljYXRpb25cL2pzb24iLCJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiUlNBLU9BRVAtMjU2In0.8c6vxeZOUBS8A9SXYUSrRnfl1ht9xxciB7TAEv84etZhQQ2civQKso-htpa2DWFBSUm-UYlxb6XtXNXZxuWu-A0WXjwi1K5ZAACc8KUoYnqPldEtC9Q2bhbQgc_qZF_GxeKrOZfuXc9oi45xfVysF_db4RZ6VkLvY2YpPeDGEMX_nLEjzqKaDz_2m0Ae_nknr0p_Nu0m5UJgMzZGR4Sk1DJWa9x-WJLEyo4w_nRDThOjHJshOHaOU6qR5rdEAZr_dwqnTHrjX9Qm9N9gflPGMaJNVa4mvpsjz6LJzjaW3nJ2yCoirbaeJyCrful6cCiwMWMaDMuiBDPKa2ovVTy0Sw.w0Nkjxl0T9HHNu4R.suRZaYu6Ui05Z3-vsw.akknMr3Dl4L0VVTGPUszcA"
+      );
+      assert.ok(JSON.stringify(resp) === JSON.stringify({ foo: "bar" }));
+    });
+
   });
 
   describe("#readPublicCertificate", () => {
