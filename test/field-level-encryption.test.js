@@ -145,6 +145,22 @@ describe("Field Level Encryption", () => {
 
       assert.ok(JSON.stringify(body) === JSON.stringify(decrypted));
     });
+
+    it("encrypt property of primitive type", () => {
+      const res = encrypt.call(fle, "/resource", null, {
+        elem1: {
+          encryptedData: "plaintext",
+          shouldBeThere: "shouldBeThere",
+        },
+      });
+      assert.ok(res.header === null);
+      assert.ok(res.body.elem1.shouldBeThere);
+      assert.ok(res.body.elem1.encryptedData);
+      assert.ok(res.body.elem1.encryptedKey);
+      assert.ok(res.body.elem1.iv);
+      assert.ok(res.body.elem1.oaepHashingAlgorithm);
+      assert.ok(res.body.elem1.publicKeyFingerprint);
+    });
   });
 
   describe("#decrypt", () => {
