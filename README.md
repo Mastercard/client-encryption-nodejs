@@ -239,6 +239,7 @@ Output:
 - [Performing JWE Decryption](#performing-jwe-decryption)
 - [Encrypting Entire Payloads](#encrypting-entire-payloads-jwe)
 - [Decrypting Entire Payloads](#decrypting-entire-payloads-jwe)
+- [First Level Field Encryption and Decryption](#encrypting-decrypting-first-level-field-jwe)
 
 ##### • Introduction <a name="jwe-introduction"></a>
 
@@ -463,6 +464,86 @@ Output:
 {
   "sensitive": "this is a secret",
   "sensitive2": "this is a super secret!"
+}
+```
+
+##### • First Level Field Encryption and Decryption <a name="encrypting-decrypting-first-level-field-jwe"></a>
+
+To have encrypted results in the first level field or to decrypt the first level field, specify `encryptedValueFieldName` to be the same as `obj` (for encryption) or `element` (for decryption):
+
+Example of configuration:
+
+```js
+const config = {
+  paths: [
+    {
+      path: "/resource1",
+      toEncrypt: [
+        {
+          /* path to element to be encrypted in request json body */
+          element: "sensitive",
+          /* path to object where to store encryption fields in request json body */
+          obj: "encryptedData",
+        },
+      ],
+      toDecrypt: [
+        {
+          /* path to element where to store decrypted fields in response object */
+          element: "encryptedData",
+          /* path to object with encryption fields */
+          obj: "sensitive",
+        },
+      ],
+    },
+  ],
+  mode: "JWE",
+  encryptedValueFieldName: "encryptedData",
+  encryptionCertificate: "./path/to/public.cert",
+  privateKey: "./path/to/your/private.key",
+};
+```
+
+Example of encryption:
+
+```js
+const payload = {
+  sensitive: "this is a secret!",
+  notSensitive: "not a secret",
+};
+const jwe = new (require("mastercard-client-encryption").JweEncryption)(config);
+// …
+let responsePayload = jwe.encrypt("/resource1", header, payload);
+```
+
+Output:
+
+```json
+{
+  "encryptedData": "eyJraWQiOiI3NjFiMDAzYzFlYWRlM….Y+oPYKZEMTKyYcSIVEgtQw",
+  "notSensitive": "not a secret"
+}
+```
+
+Example of decryption:
+
+```js
+const response = {};
+response.request = { url: "/resource1" };
+response.body =
+  "{" +
+  '    "encryptedData": "eyJraWQiOiI3NjFiMDAzYzFlYWRlM….Y+oPYKZEMTKyYcSIVEgtQw",' +
+  '    "notSensitive": "not a secret"' +
+  "}";
+const jwe = new (require("mastercard-client-encryption").JweEncryption)(config);
+let responsePayload = jwe.decrypt(response);
+```
+
+Output:
+
+```json
+{
+  "sensitive": "this is a secret",
+  "notSensitive": "not a secret"
 }
 ```
 
