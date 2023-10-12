@@ -13,6 +13,10 @@ module.exports = {
           element: "foo.elem1",
           obj: "foo",
         },
+        {
+          element: "encryptedData",
+          obj: "decryptedData",
+        },
       ],
     },
     {

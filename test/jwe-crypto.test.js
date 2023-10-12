@@ -189,6 +189,24 @@ describe("JWE Crypto", () => {
       assert.ok(resp[3].length === 24);
       assert.ok(resp[4].length === 22);
     });
+
+    it("encrypt primitive string", () => {
+      const data = "message";
+      let resp = crypto.encryptData({
+        data: data,
+      });
+      resp = resp[testConfig.encryptedValueFieldName].split(".");
+      assert.ok(resp.length === 5);
+      //Header is always constant
+      assert.strictEqual(
+        resp[0],
+        "eyJraWQiOiJnSUVQd1RxREdmenc0dXd5TElLa3d3UzNnc3c4NW5FWFkwUFA2QllNSW5rPSIsImN0eSI6ImFwcGxpY2F0aW9uL2pzb24iLCJhbGciOiJSU0EtT0FFUC0yNTYiLCJlbmMiOiJBMjU2R0NNIn0"
+      );
+      assert.ok(resp[1].length === 342);
+      assert.ok(resp[2].length === 22);
+      assert.ok(resp[3].length === 10);
+      assert.ok(resp[4].length === 22);
+    });
   });
 
   describe("#decryptData()", () => {
@@ -228,6 +246,13 @@ describe("JWE Crypto", () => {
           "eyJraWQiOiI3NjFiMDAzYzFlYWRlM2E1NDkwZTUwMDBkMzc4ODdiYWE1ZTZlYzBlMjI2YzA3NzA2ZTU5OTQ1MWZjMDMyYTc5IiwiY3R5IjoiYXBwbGljYXRpb25cL2pzb24iLCJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiUlNBLU9BRVAtMjU2In0.8c6vxeZOUBS8A9SXYUSrRnfl1ht9xxciB7TAEv84etZhQQ2civQKso-htpa2DWFBSUm-UYlxb6XtXNXZxuWu-A0WXjwi1K5ZAACc8KUoYnqPldEtC9Q2bhbQgc_qZF_GxeKrOZfuXc9oi45xfVysF_db4RZ6VkLvY2YpPeDGEMX_nLEjzqKaDz_2m0Ae_nknr0p_Nu0m5UJgMzZGR4Sk1DJWa9x-WJLEyo4w_nRDThOjHJshOHaOU6qR5rdEAZr_dwqnTHrjX9Qm9N9gflPGMaJNVa4mvpsjz6LJzjaW3nJ2yCoirbaeJyCrful6cCiwMWMaDMuiBDPKa2ovVTy0Sw.w0Nkjxl0T9HHNu4R.suRZaYu6Ui05Z3-vsw.akknMr3Dl4L0VVTGPUszcA"
       );
       assert.ok(JSON.stringify(resp) === JSON.stringify({ foo: "bar" }));
+    });
+
+    it("with valid encrypted string", () => {
+      const resp = crypto.decryptData(
+        "eyJraWQiOiJnSUVQd1RxREdmenc0dXd5TElLa3d3UzNnc3c4NW5FWFkwUFA2QllNSW5rPSIsImN0eSI6ImFwcGxpY2F0aW9uL2pzb24iLCJhbGciOiJSU0EtT0FFUC0yNTYiLCJlbmMiOiJBMjU2R0NNIn0.vZBAXJC5Xcr0LaxdTRooLrbKc0B2cqjqAv3Dfz70s2EdUHf-swWPFe6QE-gb8PW7PQ-PZxkkIE5MhP6IMH4e/NH79V5j27c6Tno3R1/DfWQjRoN8xNm4sZver4FXESBiQia-PZip4D/hVmDWLKbom4SCD6ibLLmB9WcDVXpQEmX5G-lmd6kuEoBNOKQy08/QfVhqEr2H/2Q7PAcOjizPWUw6QK0SYzkaQIgTC6nlN/swa82zZa9NJeeTxJ1sJVmXzd4J-qjxwWjtzuRqb-kh4t/CUYT/lpf5NRaktBjXFyZFJ1dir5OgfdoA6-oIh8oUNMCt26SCCuYg-ev8sfHGDA.rxP1lOVCy4hIDwi5ETr2Bw.a3IIS9/6lA.77pOElwKjHBEwaPgRfHI4w"
+      );
+      assert.strictEqual(resp, "message");
     });
 
   });

@@ -50,6 +50,15 @@ describe("JWE Encryption", () => {
         !Object.prototype.hasOwnProperty.call(res.foo, "encryptedData")
       );
     });
+
+    it("decrypt first level element in response", () => {
+      const encryption = new JweEncryption(testConfig);
+      const decrypt = JweEncryption.__get__("decrypt");
+      const response = require("./mock/jwe-response");
+      const res = decrypt.call(encryption, response);
+      assert.ok(res.decryptedData.accountNumber === "5123456789012345");
+      assert.ok(!res.encryptedData);
+    });
   });
 
   describe("#import JweEncryption", () => {

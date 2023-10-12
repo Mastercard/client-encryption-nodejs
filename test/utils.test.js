@@ -140,6 +140,58 @@ describe("Utils", () => {
       const res = utils.jsonToString('{"field": "value"}');
       assert.strictEqual(res, '{"field":"value"}');
     });
+
+    it("string from string", () => {
+      const res = utils.jsonToString('value');
+      assert.strictEqual(res, 'value');
+    });
+
+    it("string from string object", () => {
+      const res = utils.jsonToString(new String("value"));
+      assert.strictEqual(res, 'value');
+    });
+  });
+
+  describe("#stringToJson", () => {
+    it("when null", () => {
+      assert.throws(() => {
+        utils.stringToJson(null);
+      });
+    });
+
+    it("when undefined", () => {
+      assert.throws(() => {
+        utils.stringToJson(undefined);
+      });
+    });
+
+    it("when empty obj", () => {
+      const res = utils.stringToJson('{}');
+      assert.strictEqual(JSON.stringify(res), JSON.stringify({}));
+    });
+
+    it("when empty str", () => {
+      assert.throws(() => utils.stringToJson(""));
+    });
+
+    it("when Json object", () => {
+      assert.throws(() => utils.stringToJson({ field: "value" }));
+    });
+
+    it("string from string", () => {
+      const res = utils.stringToJson('value');
+      assert.strictEqual(res, "value");
+    });
+
+    it("string from string object", () => {
+      const res = utils.stringToJson(new String("value"));
+      assert.strictEqual(res, "value");
+    });
+
+    it("correct json object from string", () => {
+      const res = utils.stringToJson('{"field": "value"}');
+      assert.strictEqual(JSON.stringify(res), JSON.stringify({ field: 'value' }));
+    });
   });
 
   describe("#mutateObjectProperty", () => {
@@ -311,6 +363,93 @@ describe("Utils", () => {
         JSON.stringify({ path: { to: { foo: { field: "value" } } } }) ===
           JSON.stringify(body)
       );
+    });
+  });
+
+  describe("#addEncryptedDataToBody", () => {
+    it("encrypting first level field", () => {
+      const body = {
+        firstLevelField: "secret",
+        anotherFirstLevelField: "value"
+      };
+      const expected = JSON.stringify({
+        anotherFirstLevelField: "value",
+        encryptedData: "changed"
+      });
+      const value = { encryptedData: "changed" };
+      const path = { element: 'firstLevelField', obj: 'encryptedData' };
+      utils.addEncryptedDataToBody(value, path, "encryptedData", body);
+      assert.strictEqual(JSON.stringify(body), expected);
+    });
+
+    it("encryptedValueFieldName is not in the path", () => {
+      const body = {
+        field: "secret",
+        anotherField: "value"
+      };
+      const expected = JSON.stringify({
+        anotherField: "value",
+        encryptedField: {
+          encryptedData: "changed"
+        }
+      });
+      const value = { encryptedData: "changed" };
+      const path = { element: 'field', obj: 'encryptedField' };
+      utils.addEncryptedDataToBody(value, path, "encryptedData", body);
+      assert.strictEqual(JSON.stringify(body), expected);
+    });
+
+    it("encrypting to existing field", () => {
+      const body = {
+        field: "secret",
+        anotherField: "value"
+      };
+      const expected = JSON.stringify({
+        anotherField: "value",
+        field: "changed"
+      });
+      const value = { field: "changed" };
+      const path = { element: 'field', obj: 'field' };
+      utils.addEncryptedDataToBody(value, path, "field", body);
+      assert.strictEqual(JSON.stringify(body), expected);
+    });
+
+    it("encrypting to existing subfield", () => {
+      const body = {
+        field: {
+          subField: "secret"
+        },
+        anotherField: "value"
+      };
+      const expected = JSON.stringify({
+        field: {
+          subField: "changed"
+        },
+        anotherField: "value"
+      });
+      const value = { subField: "changed" };
+      const path = { element: 'field.subField', obj: 'field' };
+      utils.addEncryptedDataToBody(value, path, "subField", body);
+      assert.strictEqual(JSON.stringify(body), expected);
+    });
+
+    it("encrypting to new subfield", () => {
+      const body = {
+        field: {
+          subField: "secret"
+        },
+        anotherField: "value"
+      };
+      const expected = JSON.stringify({
+        field: {
+          encryptedData: "changed"
+        },
+        anotherField: "value"
+      });
+      const value = { encryptedData: "changed" };
+      const path = { element: 'field.subField', obj: 'field' };
+      utils.addEncryptedDataToBody(value, path, "encryptedData", body);
+      assert.strictEqual(JSON.stringify(body), expected);
     });
   });
 
