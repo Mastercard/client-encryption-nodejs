@@ -594,4 +594,84 @@ describe("Utils", () => {
     });
   });
 
+  describe("#utils.splitPathByLastWildcard", () => {
+    it("path with wildcard", () => {
+      const res = utils.splitPathByLastWildcard("elem1.*.elem2");
+      assert.strictEqual(JSON.stringify(res), JSON.stringify(["elem1.*", ".elem2"]));
+    });
+
+    it("path without wildcard", () => {
+      const res = utils.splitPathByLastWildcard("elem1.elem2");
+      assert.strictEqual(JSON.stringify(res), JSON.stringify(["elem1.elem2"]));
+    });
+
+    it("path with several wildcards", () => {
+      const res = utils.splitPathByLastWildcard("*.elem1.*.elem2");
+      assert.strictEqual(JSON.stringify(res), JSON.stringify(["*.elem1.*", ".elem2"]));
+    });
+
+    it("path only with wildcard", () => {
+      const res = utils.splitPathByLastWildcard("*");
+      assert.strictEqual(JSON.stringify(res), JSON.stringify(["*", ""]));
+    });
+
+    it("path with last wildcard", () => {
+      const res = utils.splitPathByLastWildcard("elem1.*");
+      assert.strictEqual(JSON.stringify(res), JSON.stringify(["elem1.*", ""]));
+    });
+
+    it("path with first wildcard", () => {
+      const res = utils.splitPathByLastWildcard("*.elem1");
+      assert.strictEqual(JSON.stringify(res), JSON.stringify(["*", ".elem1"]));
+    });
+
+    it("empty path", () => {
+      const res = utils.splitPathByLastWildcard("");
+      assert.strictEqual(JSON.stringify(res), JSON.stringify([""]));
+    });
+  });
+
+  describe("#utils.replaceWildcardsWithIndexes", () => {
+    it("path with *", () => {
+      const json = { elem1: "value", elem2: [{ elem3: { elem4: "value", elem5: "value" } }, { elem3: { elem4 : "value", elem5: "value" } } ]};
+      const path = "elem2.*";
+      const res = utils.replaceWildcardsWithIndexes(path, json);
+      assert.strictEqual(JSON.stringify(res), JSON.stringify(["elem2.0", "elem2.1"]));
+    });
+
+    it("path without *", () => {
+      const json = { elem1: { elem2: "value"}, elem2: [{ elem3: { elem4: "value", elem5: "value" } }, { elem3: { elem4 : "value", elem5: "value" } } ]};
+      const path = "elem1.elem2";
+      const res = utils.replaceWildcardsWithIndexes(path, json);
+      assert.strictEqual(JSON.stringify(res), JSON.stringify(["elem1.elem2"]));
+    });
+
+    it("path with multiple *", () => {
+      const json = { elem1: { elem2: "value"}, elem2: [{ elem3: [{ elem4: "value", elem5: "value" }] }, { elem3: [{ elem4 : "value", elem5: "value" }] } ]};
+      const path = "elem2.*.elem3.*";
+      const res = utils.replaceWildcardsWithIndexes(path, json);
+      assert.strictEqual(JSON.stringify(res), JSON.stringify(["elem2.0.elem3.0", "elem2.1.elem3.0"]));
+    });
+
+    it("path with * but no array in JSON", () => {
+      const json = { elem1: { elem2: "value"}, elem2: { elem3: { elem4: "value", elem5: "value" } }};
+      const path = "elem2.*";
+      const res = utils.replaceWildcardsWithIndexes(path, json);
+      assert.strictEqual(JSON.stringify(res), JSON.stringify([]));
+    });
+
+    it("path with only *", () => {
+      const json = [{ elem3: { elem4: "value", elem5: "value" } }, { elem3: { elem4 : "value", elem5: "value" } } ];
+      const path = "*";
+      const res = utils.replaceWildcardsWithIndexes(path, json);
+      assert.strictEqual(JSON.stringify(res), JSON.stringify(["0", "1"]));
+    });
+
+    it("empty path", () => {
+      const json = { elem1: { elem2: "value"}, elem2: { elem3: { elem4: "value", elem5: "value" } }};
+      const path = "";
+      const res = utils.replaceWildcardsWithIndexes(path, json);
+      assert.strictEqual(JSON.stringify(res), JSON.stringify([""]));
+    });
+  });
 });
