@@ -1,6 +1,6 @@
 {
   "name": "mastercard-client-encryption",
-  "version": "1.10.1",
+  "version": "1.10.2",
   "description": "Library for Mastercard API compliant payload encryption/decryption.",
   "main": "index.js",
   "engines": {
