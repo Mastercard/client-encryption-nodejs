@@ -64,6 +64,19 @@ module.exports = {
         },
       ],
     },
+    {
+      path: "/entirepayload",
+      toEncrypt: [
+        {
+          element: "$", obj: "$",
+        },
+      ],
+      toDecrypt: [
+        {
+          element: "encryptedResponse", obj: "$",
+        }
+      ],
+    }
   ],
   mode: "JWE",
   encryptedValueFieldName: "encryptedData",

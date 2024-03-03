@@ -70,3 +70,27 @@ describe("JWE Encryption", () => {
     });
   });
 });
+
+describe("#", () => {
+  it("entire payload encryption and decryption where request and response object is different", () => {
+    const encryption = new JweEncryption(testConfig);
+    const encrypt = JweEncryption.__get__("encrypt");
+    const encryptedPayload = encrypt.call(encryption, "/entirepayload", null,
+      {
+        externalReference: "48956hguyguy23g4234",
+        amount: "2",
+        payers: [{ accountAlias: "stg_earmark_payer1withcryptoaddr", amount: "2" }],
+        recipients: [{ accountAlias: "stg_earmark_recip1WithCryptoAddr", amount: "1" }]
+      });
+    encryptedPayload.body.encryptedResponse = encryptedPayload.body.encryptedData;
+    delete encryptedPayload.body.encryptedData;
+
+    const decrypt = JweEncryption.__get__("decrypt");
+    encryptedPayload.request = { url: "/entirepayload" }
+    const res = decrypt.call(encryption, encryptedPayload);
+    assert.ok(res.externalReference === "48956hguyguy23g4234");
+    assert.ok(res.amount === "2");
+    assert.ok(res.payers[0].accountAlias === "stg_earmark_payer1withcryptoaddr");
+    assert.ok(res.recipients[0].accountAlias === "stg_earmark_recip1WithCryptoAddr");
+  });
+});
