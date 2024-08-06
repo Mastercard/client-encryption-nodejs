@@ -9,11 +9,9 @@ module.exports = {
     libraryTarget: 'var'
 
   },
-  {
   resolve: {
     fallback: {
       fs: false
     }
   }
-},
 };
