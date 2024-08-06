@@ -8,10 +8,5 @@ module.exports = {
     library: 'mcencrypt',
     libraryTarget: 'var'
 
-  },
-  resolve: {
-    fallback: {
-      fs: false
-    }
   }
 };
