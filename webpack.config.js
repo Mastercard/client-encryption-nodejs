@@ -7,6 +7,11 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
     library: 'mcencrypt',
     libraryTarget: 'var'
-
-  }
+  },
+  node: {
+    global: false,
+    __filename: false,
+    __dirname: false,
+  },
+  
 };
