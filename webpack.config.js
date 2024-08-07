@@ -11,7 +11,8 @@ module.exports = {
   },
   resolve: {
     fallback: {
-      fs: false
+      fs: false,
+      crypto: require.resolve('crypto-browserify')
     }
   }
 };
