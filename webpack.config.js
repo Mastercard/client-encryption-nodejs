@@ -9,7 +9,10 @@ module.exports = {
     libraryTarget: 'var'
 
   },
-  node: {
-    fs: "empty"
+  resolve: {
+    fallback: {
+      fs: false,
+      crypto: false
+    }
   }
 };
