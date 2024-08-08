@@ -134,14 +134,6 @@ const config = {
 };
 ```
 
-For all config options, please see:
-
-- [Configuration object](https://github.com/Mastercard/client-encryption-nodejs/wiki/Configuration-Object) for all config options
-
-We have a predefined set of configurations to use with Mastercard services:
-
-- [Service configurations](https://github.com/Mastercard/client-encryption-nodejs/wiki/Service-Configurations-for-Client-Encryption-NodeJS)
-
 #### Performing Encryption <a name="performing-encryption"></a>
 
 Call `FieldLevelEncryption.encrypt()` with a JSON request payload, and optional `header` object.
