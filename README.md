@@ -339,7 +339,7 @@ Example using the configuration [above](#configuring-the-jwe-encryption):
 ```js
 const response = {};
 response.request = { url: "/resource1" };
-response.body =
+response.body = JSON.parse(
   "{" +
   '    "path": {' +
   '        "to": {' +
@@ -348,7 +348,7 @@ response.body =
   "            }" +
   "        }" +
   "    }" +
-  "}";
+  "}");
 const jwe = new (require("mastercard-client-encryption").JweEncryption)(config);
 let responsePayload = jwe.decrypt(response);
 ```
@@ -398,11 +398,11 @@ const config = {
 Example:
 
 ```js
-const payload =
+const payload = JSON.parse(
   "{" +
   '    "sensitive": "this is a secret",' +
   '    "sensitive2": "this is a super secret!"' +
-  "}";
+  "}");
 const jwe = new (require("mastercard-client-encryption").JweEncryption)(config);
 // …
 let responsePayload = jwe.encrypt("/resource1", header, payload);
@@ -446,10 +446,10 @@ const config = {
 Example:
 
 ```js
-const encryptedPayload =
+const encryptedPayload = JSON.parse(
   "{" +
   '  "encryptedData": "eyJraWQiOiI3NjFiMDAzYzFlYWRlM….Y+oPYKZEMTKyYcSIVEgtQw"' +
-  "}";
+  "}");
 const jwe = new (require("mastercard-client-encryption").JweEncryption)(config);
 let responsePayload = jwe.decrypt(encryptedPayload);
 ```
@@ -525,11 +525,11 @@ Example of decryption:
 ```js
 const response = {};
 response.request = { url: "/resource1" };
-response.body =
+response.body = JSON.parse(
   "{" +
   '    "encryptedData": "eyJraWQiOiI3NjFiMDAzYzFlYWRlM….Y+oPYKZEMTKyYcSIVEgtQw",' +
   '    "notSensitive": "not a secret"' +
-  "}";
+  "}");
 const jwe = new (require("mastercard-client-encryption").JweEncryption)(config);
 let responsePayload = jwe.decrypt(response);
 ```
