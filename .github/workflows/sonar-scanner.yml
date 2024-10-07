@@ -20,7 +20,7 @@ jobs:
           github.event.pull_request.head.repo.full_name == github.repository ||
           github.event_name != 'pull_request_target') }}
         run: echo "Unsecure PR, must be labelled with the 'safe' label, then run the workflow again" && exit 1
-      - name: Use Node.js 18
+      - name: Use Node.js 16
         uses: actions/setup-node@v1
         with:
           node-version: 16
