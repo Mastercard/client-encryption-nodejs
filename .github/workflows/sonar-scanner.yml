@@ -23,7 +23,7 @@ jobs:
       - name: Use Node.js 18
         uses: actions/setup-node@v1
         with:
-          node-version: 18
+          node-version: 16
       - name: Build with npm
         run: |
           npm ci
