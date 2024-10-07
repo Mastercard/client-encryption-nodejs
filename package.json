@@ -33,7 +33,6 @@
   "author": "Mastercard",
   "license": "MIT",
   "dependencies": {
-    "mastercard-client-encryption": "^1.10.3",
     "node-forge": "^1.3.0"
   },
   "devDependencies": {
