@@ -131,7 +131,7 @@ describe("Field Level Crypto", () => {
       delete config["publicKeyFingerprintType"];
       assert.throws(
         () => new Crypto(config),
-        /Config not valid: propertiesFingerprint should be: 'certificate' or 'publicKey'/
+        /Config not valid: publicKeyFingerprintType should be: 'certificate' or 'publicKey'/
       );
     });
 
@@ -147,7 +147,7 @@ describe("Field Level Crypto", () => {
       config.publicKeyFingerprintType = "foobar";
       assert.throws(
         () => new Crypto(config),
-        /Config not valid: propertiesFingerprint should be: 'certificate' or 'publicKey'/
+        /Config not valid: publicKeyFingerprintType should be: 'certificate' or 'publicKey'/
       );
     });
 

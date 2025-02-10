@@ -453,7 +453,25 @@ describe("Utils", () => {
     });
   });
 
-  describe("#getPrivateKey12", () => {
+  describe("#getPrivateKey", () => {
+    it("empty p12 file", () => {
+      assert.throws(() => {
+        utils.getPrivateKey({ 
+          keyStore: "./test/res/empty.p12",
+          keyStoreAlias: "mykeyalias",
+          keyStorePassword: "Password1", });
+      }, /p12 keystore content is empty/);
+    });
+    
+    it("empty p12 file unknown extension", () => {
+      assert.throws(() => {
+        utils.getPrivateKey({ 
+          keyStore: "./test/res/keys/pkcs12/empty_key_container.unknown_extension",
+          keyStoreAlias: "mykeyalias",
+          keyStorePassword: "Password1", });
+      }, /p12 keystore content is empty/);
+    });
+
     it("empty alias", () => {
       assert.throws(() => {
         utils.getPrivateKey({
@@ -489,50 +507,82 @@ describe("Utils", () => {
         });
       }, /No key found for alias \[mykeyalias1\]/);
     });
-  });
 
-  describe("#getPrivateKeyPem", () => {
-    it("valid pkcs8 pem", () => {
+    it("valid p12, unknown extension", () => {
+      const pk = utils.getPrivateKey({
+        keyStore: "./test/res/keys/pkcs12/test_key_container.unknown_extension",
+        keyStoreAlias: "mykeyalias",
+        keyStorePassword: "Password1",
+      });
+      assert.ok(pk);
+    });
+
+    it("empty unencrypted file keyStore", () => {
+      assert.throws(() => {
+        utils.getPrivateKey({ keyStore: "./test/res/empty.pem" });
+      }, /private key file content is empty/);
+    });
+
+    it("valid pkcs8 pem in keyStore", () => {
       const pk = utils.getPrivateKey({
         keyStore: "./test/res/keys/pkcs8/test_key.pem",
       });
       assert.ok(pk);
     });
 
-    it("valid pkcs1 pem", () => {
+    it("valid pkcs1 pem in keyStore", () => {
       const pk = utils.getPrivateKey({
         keyStore: "./test/res/keys/pkcs1/test_key.pem",
       });
       assert.ok(pk);
     });
 
-    it("not valid key", () => {
-      assert.throws(() => {
-        utils.getPrivateKey({ keyStore: "./test/res/empty.pem" });
-      }, /pem keystore content is empty/);
-    });
-  });
-
-  describe("#getPrivateKeyDer", () => {
-    it("valid pkcs8 der", () => {
+    it("valid pkcs8 der in keyStore", () => {
       const pk = utils.getPrivateKey({
         keyStore: "./test/res/keys/pkcs8/test_key.der",
       });
       assert.ok(pk);
     });
 
-    it("not valid key", () => {
-      assert.throws(() => {
-        utils.getPrivateKey({ keyStore: "./test/res/empty.der" });
-      }, /der keystore content is empty/);
+    it("valid pkcs1 der in keyStore", () => {
+      const pk = utils.getPrivateKey({
+        keyStore: "./test/res/keys/pkcs1/test_key.der",
+      });
+      assert.ok(pk);
     });
-  });
 
-  describe("#loadPrivateKey", () => {
-    it("not valid key", () => {
+    it("empty unencrypted file in privateKey", () => {
       assert.throws(() => {
-        utils.getPrivateKey({ privateKey: "./test/res/empty.key" });
-      }, /Private key content not valid/);
+        utils.getPrivateKey({ privateKey: "./test/res/empty.pem" });
+      }, /private key file content is empty/);
+    });
+
+    it("valid pkcs8 pem in privateKey", () => {
+      const pk = utils.getPrivateKey({
+        privateKey: "./test/res/keys/pkcs8/test_key.pem",
+      });
+      assert.ok(pk);
+    });
+
+    it("valid pkcs1 pem in privateKey", () => {
+      const pk = utils.getPrivateKey({
+        privateKey: "./test/res/keys/pkcs1/test_key.pem",
+      });
+      assert.ok(pk);
+    });
+
+    it("valid pkcs8 der in privateKey", () => {
+      const pk = utils.getPrivateKey({
+        privateKey: "./test/res/keys/pkcs8/test_key.der",
+      });
+      assert.ok(pk);
+    });
+
+    it("valid pkcs1 der in privateKey", () => {
+      const pk = utils.getPrivateKey({
+        privateKey: "./test/res/keys/pkcs1/test_key.der",
+      });
+      assert.ok(pk);
     });
   });
 
