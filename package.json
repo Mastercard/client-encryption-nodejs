@@ -1,6 +1,6 @@
 {
   "name": "mastercard-client-encryption",
-  "version": "1.10.4",
+  "version": "1.10.5",
   "description": "Library for Mastercard API compliant payload encryption/decryption.",
   "main": "index.js",
   "engines": {
@@ -48,5 +48,11 @@
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
-  }
+  },
+  "files": [
+    "lib",
+    "index.js",
+    "README.md",
+    "LICENSE"
+  ]
 }
