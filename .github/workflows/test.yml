@@ -15,7 +15,6 @@ jobs:
     strategy:
       matrix:
         node-version:
-          - 16.x
           - 17.x
           - 18.x
           - 19.x
