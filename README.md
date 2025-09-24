@@ -54,7 +54,7 @@ As part of this set up, you'll receive:
 
 If you want to use **mastercard-client-encryption** with [Node.js](https://nodejs.org/), it is available through `npm`:
 
-- [https://npmjs.org/package/mastercard-client-encryption](https://npmjs.org/package/mastercard-client-encryption)
+- [http://npmjs.org/package/mastercard-client-encryption](http://npmjs.org/package/mastercard-client-encryption)
 
 Adding the library to your project:
 
