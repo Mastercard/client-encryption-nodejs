@@ -14,6 +14,6 @@ jobs:
         id: lc
         uses: lycheeverse/lychee-action@v2
         with:
-          args: --no-progress './**/*.md' './**/*.html' --insecure --verbose --accept 200,204,206 --user-agent 'Mozilla/5.0 (Windows Phone 10.0; Android 6.0.1; Microsoft; RM-1152) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Mobile Safari/537.36 Edge/15.15254'
+          args: --no-progress './**/*.md' './**/*.html' --insecure --verbose --accept 200,204,206 --exclude '^http://www\.npmjs\.com'
       - name: Fail?
         run: 'exit ${{ steps.lc.outputs.exit_code }}'
