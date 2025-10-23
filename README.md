@@ -1,6 +1,9 @@
 # client-encryption-nodejs
 
-[![](https://developer.mastercard.com/_/_/src/global/assets/svg/mcdev-logo-dark.svg)](https://developer.mastercard.com/)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://developer.mastercard.com/_/_/src/global/assets/svg/mcdev-logo-light.svg">
+  <img src="https://developer.mastercard.com/_/_/src/global/assets/svg/mcdev-logo-dark.svg" alt="mastercard developers logo">
+</picture>
 
 [![](https://github.com/Mastercard/client-encryption-nodejs/workflows/Build%20&%20Test/badge.svg)](https://github.com/Mastercard/client-encryption-nodejs/actions?query=workflow%3A%22Build+%26+Test%22)
 [![](https://sonarcloud.io/api/project_badges/measure?project=Mastercard_client-encryption-nodejs&metric=alert_status)](https://sonarcloud.io/dashboard?id=Mastercard_client-encryption-nodejs)
