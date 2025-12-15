@@ -2,6 +2,8 @@ const assert = require("assert");
 const rewire = require("rewire");
 const Crypto = rewire("../lib/mcapi/crypto/jwe-crypto");
 const utils = require("../lib/mcapi/utils/utils");
+const c = require("../lib/mcapi/utils/constants");
+const nodeCrypto = require("crypto");
 
 const testConfig = require("./mock/jwe-config");
 
@@ -256,6 +258,120 @@ describe("JWE Crypto", () => {
     });
 
   });
+
+  describe("verifyCbcHmac()", () => {
+    let encodedHeaderB64Url;
+    let ciphertext;
+    let secretKey;
+    let iv;
+    let fullTag;
+    let authTag;
+
+    before(() => {
+      const headerJson = JSON.stringify({ alg: "RSA-OAEP-256", enc: "A128CBC-HS256" });
+      encodedHeaderB64Url = Buffer.from(headerJson, c.UTF8)
+        .toString(c.BASE64)
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_")
+        .replace(/=/g, "");
+
+      iv = nodeCrypto.randomBytes(16);
+      ciphertext = nodeCrypto.randomBytes(32);
+
+      const macKey = nodeCrypto.randomBytes(16);
+      const encKey = nodeCrypto.randomBytes(16);
+      secretKey = Buffer.concat([macKey, encKey]);
+
+      const aad = Buffer.from(encodedHeaderB64Url, c.ASCII);
+      const al = Buffer.alloc(8);
+      const aadBits = aad.length * 8;
+      al.writeUInt32BE(Math.floor(aadBits / Math.pow(2, 32)), 0);
+      al.writeUInt32BE(aadBits >>> 0, 4);
+
+      const hmac = nodeCrypto.createHmac("sha256", macKey);
+      hmac.update(aad);
+      hmac.update(iv);
+      hmac.update(ciphertext);
+      hmac.update(al);
+      fullTag = hmac.digest();
+      authTag = fullTag.slice(0, 16);
+    });
+
+    it("should NOT throw when HMAC tag is valid", () => {
+      const verifyCbcHmac = Crypto.__get__("verifyCbcHmac");
+
+      assert.doesNotThrow(() => {
+        verifyCbcHmac(encodedHeaderB64Url, iv, ciphertext, authTag, secretKey);
+      });
+    });
+
+    it("should throw when HMAC tag is invalid", () => {
+      const verifyCbcHmac = Crypto.__get__("verifyCbcHmac");
+
+      const tamperedTag = Buffer.from(authTag);
+      tamperedTag[0] ^= 0xff;
+
+      assert.throws(() => {
+        verifyCbcHmac(encodedHeaderB64Url, iv, ciphertext, tamperedTag, secretKey);
+      }, /Authentication tag verification failed/);
+    });
+  });
+
+  describe("HMAC verification toggle (A128CBC-HS256)", () => {
+    let CryptoRewired;
+    let verifySpy;
+    let token;
+    before(() => {
+      CryptoRewired = rewire("../lib/mcapi/crypto/jwe-crypto");
+      verifySpy = { called: false };
+      CryptoRewired.__set__("verifyCbcHmac", () => { verifySpy.called = true; });
+
+      CryptoRewired.__set__("nodeCrypto", {
+        constants: { RSA_PKCS1_OAEP_PADDING: 4 },
+        privateDecrypt: () => {
+          return Buffer.alloc(32, 1);
+        },
+        createDecipheriv: () => ({
+          setAAD: () => {},
+          setAuthTag: () => {},
+          update: () => "",
+          final: () => "test"
+        })
+      });
+
+      const header = Buffer.from(JSON.stringify({ alg: "RSA-OAEP-256", enc: "A128CBC-HS256" }), c.UTF8)
+        .toString(c.BASE64)
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_")
+        .replace(/=/g, "");
+      const ek = Buffer.from("ek").toString(c.BASE64).replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
+      const iv = Buffer.from("1234567890123456").toString(c.BASE64).replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
+      const ct = Buffer.from("ciphertext").toString(c.BASE64).replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
+      const tag = Buffer.alloc(16).toString(c.BASE64).replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
+      token = `${header}.${ek}.${iv}.${ct}.${tag}`;
+    });
+
+    it("does NOT call verifyCbcHmac by default", () => {
+      const cfg = JSON.parse(JSON.stringify(testConfig));
+
+      const crypto = new CryptoRewired(cfg);
+      crypto.decryptData(token);
+
+      assert.strictEqual(verifySpy.called, false, "verifyCbcHmac should not be called by default");
+    });
+
+    it("calls verifyCbcHmac when config.enableHmacVerification is true", () => {
+      const cfg = JSON.parse(JSON.stringify(testConfig));
+      cfg.enableHmacVerification = true;
+
+      const crypto = new CryptoRewired(cfg);
+      crypto.decryptData(token);
+
+      assert.strictEqual(verifySpy.called, true, "verifyCbcHmac should be called when enabled");
+    });
+  });
+
+
 
   describe("#readPublicCertificate", () => {
     it("not valid key", () => {
