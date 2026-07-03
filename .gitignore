@@ -68,6 +68,9 @@ typings/
 #Eslint output folder
 target/
 
+# Webpack build output
+dist/
+
 #Test Result
 test-results.xml
 

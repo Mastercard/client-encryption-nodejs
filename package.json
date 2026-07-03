@@ -10,9 +10,11 @@
     "build": "webpack",
     "test": "mocha && mocha --reporter mocha-sonar-generic-test-coverage > test-results.xml",
     "coverage": "nyc mocha && nyc report --reporter=text-lcov > .nyc_output/coverage.lcov",
-    "lint": "eslint lib --ext .js",
-    "lint:fix": "eslint lib --ext .js --fix",
-    "lint:report": "npm run lint -- -f checkstyle --output-file target/checkstyle.xml",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "lint:report": "npm run lint -- -f eslint-formatter-checkstyle --output-file target/checkstyle.xml",
+    "format:check": "prettier --check \"**/*.js\"",
+    "format:fix": "prettier --write \"**/*.js\"",
     "precommit": "lint-staged"
   },
   "mocha": {
@@ -36,15 +38,25 @@
     "node-forge": "^1.4.0"
   },
   "devDependencies": {
-    "eslint": "^7.7.0",
-    "eslint-config-prettier": "^6.11.0",
-    "eslint-plugin-mocha": "^8.0.0",
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.6.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-formatter-checkstyle": "^9.0.1",
+    "eslint-plugin-mocha": "^11.3.0",
+    "globals": "^17.7.0",
     "mocha": "^10.7.3",
     "mocha-sonar-generic-test-coverage": "^0.0.1",
-    "nyc": "^15.1.0",
+    "nyc": "^18.0.0",
+    "prettier": "^3.9.4",
     "rewire": "^9.0.0",
-    "webpack": "^5.105.4",
-    "webpack-cli": "^4.10.0"
+    "webpack": "^5.108.3",
+    "webpack-cli": "^7.1.0"
+  },
+  "overrides": {
+    "serialize-javascript": ">=7.0.3",
+    "fast-uri": ">=3.1.1",
+    "js-yaml": ">=4.2.0",
+    "uuid": ">=11.1.1"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
