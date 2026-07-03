@@ -616,7 +616,7 @@ describe("Utils", () => {
 
     it("when config is null", () => {
       const ret = utils.hasConfig(null, "/resource");
-      assert.ok(ret == null);
+      assert.ok(ret === null);
     });
 
     it("when path has wildcard", () => {

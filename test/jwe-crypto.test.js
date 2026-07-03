@@ -162,6 +162,7 @@ describe("JWE Crypto", () => {
 
   describe("#encryptData()", () => {
     let crypto;
+
     before(() => {
       crypto = new Crypto(testConfig);
     });
@@ -211,6 +212,7 @@ describe("JWE Crypto", () => {
 
   describe("#decryptData()", () => {
     let crypto;
+
     before(() => {
       crypto = new Crypto(testConfig);
     });
@@ -269,6 +271,7 @@ describe("JWE Crypto", () => {
   describe("#computePublicFingerprint", () => {
     const computePublicFingerprint = Crypto.__get__("computePublicFingerprint");
     let crypto;
+
     before(() => {
       crypto = new Crypto(testConfig);
     });

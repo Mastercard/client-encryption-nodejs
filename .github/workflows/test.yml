@@ -10,6 +10,18 @@ name: Build & Test
     - cron: 0 16 * * *
   workflow_dispatch:
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Use Node.js 24.x
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24.x'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run lint
+
   build:
     runs-on: ubuntu-latest
     strategy:
@@ -18,12 +30,16 @@ jobs:
           - 17.x
           - 18.x
           - 19.x
+          - 20.x
+          - 22.x
+          - 24.x
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v7
       - name: 'Use Node.js ${{ matrix.node-version }}'
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v6
         with:
           node-version: '${{ matrix.node-version }}'
+          cache: 'npm'
       - run: npm ci
       - run: npm run build --if-present
       - run: npm test

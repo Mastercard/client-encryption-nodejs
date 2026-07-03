@@ -219,6 +219,7 @@ describe("Field Level Crypto", () => {
 
   describe("#encryptData()", () => {
     let crypto;
+
     before(() => {
       crypto = new Crypto(testConfig);
     });
@@ -310,6 +311,7 @@ describe("Field Level Crypto", () => {
 
   describe("#decryptData()", () => {
     let crypto;
+
     before(() => {
       crypto = new Crypto(testConfig);
     });
@@ -348,9 +350,11 @@ describe("Field Level Crypto", () => {
 
   describe("#newEncryptionParams", () => {
     let crypto;
+
     before(() => {
       crypto = new Crypto(testConfig);
     });
+
     it("without options", () => {
       const params = crypto.newEncryptionParams();
       assert.ok(params.iv);
