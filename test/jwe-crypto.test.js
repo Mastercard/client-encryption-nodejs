@@ -208,6 +208,52 @@ describe("JWE Crypto", () => {
       assert.ok(resp[3].length === 10);
       assert.ok(resp[4].length === 22);
     });
+
+    it("emits only base64url characters in every segment", () => {
+      // The encrypted key is 342 characters, so standard base64 output contains
+      // at least one '/' in virtually every token. Loop to make the assertion
+      // independent of the random content encryption key and IV.
+      for (let i = 0; i < 25; i++) {
+        const resp = crypto.encryptData({
+          data: JSON.stringify({ text: "message" }),
+        });
+        const segments = resp[testConfig.encryptedValueFieldName].split(".");
+        segments.forEach((segment, index) => {
+          assert.ok(
+            /^[A-Za-z0-9_-]+$/.test(segment),
+            `segment ${index} is not base64url encoded: ${segment}`
+          );
+        });
+      }
+    });
+  });
+
+  describe("#toEncodedString()", () => {
+    const toEncodedString = Crypto.__get__("toEncodedString");
+
+    it("maps '+' and '/' to the base64url alphabet and strips padding", () => {
+      // Buffer.from("ffbf", "hex") is base64 "/78=", which exercises both the
+      // '/' substitution and padding removal.
+      assert.strictEqual(
+        toEncodedString(
+          Buffer.from("fffefd03efbf", "hex"),
+          "binary",
+          "base64url"
+        ),
+        "__79A--_"
+      );
+      assert.strictEqual(
+        toEncodedString(Buffer.from("ffbf", "hex"), "binary", "base64url"),
+        "_78"
+      );
+    });
+
+    it("leaves non base64url target formats untouched", () => {
+      assert.strictEqual(
+        toEncodedString(Buffer.from("ffbf", "hex"), "binary", "base64"),
+        "/78="
+      );
+    });
   });
 
   describe("#decryptData()", () => {
