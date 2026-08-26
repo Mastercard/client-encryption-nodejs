@@ -1,5 +1,7 @@
 const assert = require("assert");
 const rewire = require("rewire");
+const forge = require("node-forge");
+const nodeCrypto = require("crypto");
 const Crypto = rewire("../lib/mcapi/crypto/jwe-crypto");
 const utils = require("../lib/mcapi/utils/utils");
 
@@ -167,6 +169,18 @@ describe("JWE Crypto", () => {
       crypto = new Crypto(testConfig);
     });
 
+    // Unwrap a JWE encrypted-key segment with an explicit digest, using node
+    // directly so the assertion does not depend on the code under test.
+    const unwrap = (encryptedKey, oaepHash) =>
+      nodeCrypto.privateDecrypt(
+        {
+          key: forge.pki.privateKeyToPem(utils.getPrivateKey(testConfig)),
+          padding: nodeCrypto.constants.RSA_PKCS1_OAEP_PADDING,
+          oaepHash: oaepHash,
+        },
+        encryptedKey
+      );
+
     it("with empty string", () => {
       assert.throws(() => {
         crypto.encryptData({ data: "" });
@@ -207,6 +221,83 @@ describe("JWE Crypto", () => {
       assert.ok(resp[2].length === 22);
       assert.ok(resp[3].length === 10);
       assert.ok(resp[4].length === 22);
+    });
+
+    it("still wraps with SHA-256 when the runtime ignores oaepHash", () => {
+      // Simulate crypto-browserify: publicEncrypt accepts oaepHash and always
+      // wraps with SHA-1 regardless. On the unpatched module this silently
+      // produced a token whose header claimed RSA-OAEP-256 over a SHA-1 wrap.
+      const sha1Only = Object.assign({}, nodeCrypto, {
+        publicEncrypt: (options, buffer) =>
+          nodeCrypto.publicEncrypt(
+            {
+              key: options.key,
+              padding: options.padding,
+              oaepHash: "sha1",
+            },
+            buffer
+          ),
+      });
+      const revertCrypto = Crypto.__set__("nodeCrypto", sha1Only);
+      const revertProbe = Crypto.__set__("nativeOaepHash", null);
+      try {
+        const isolated = new Crypto(testConfig);
+        const encrypted = isolated.encryptData({
+          data: JSON.stringify({ text: "message" }),
+        });
+        const encryptedKey = Buffer.from(
+          encrypted[testConfig.encryptedValueFieldName].split(".")[1],
+          "base64"
+        );
+        assert.strictEqual(unwrap(encryptedKey, "sha256").length, 32);
+        assert.throws(() => unwrap(encryptedKey, "sha1"));
+      } finally {
+        revertProbe();
+        revertCrypto();
+      }
+    });
+
+    it("detects whether the runtime honours oaepHash", () => {
+      const honoursOaepHash = Crypto.__get__("honoursOaepHash");
+      const certPem = forge.pki.certificateToPem(
+        utils.readPublicCertificate(testConfig.encryptionCertificate)
+      );
+
+      let reset = Crypto.__set__("nativeOaepHash", null);
+      assert.strictEqual(honoursOaepHash(certPem), true, "node validates it");
+      reset();
+
+      reset = Crypto.__set__("nativeOaepHash", null);
+      const revert = Crypto.__set__(
+        "nodeCrypto",
+        Object.assign({}, nodeCrypto, { publicEncrypt: () => Buffer.alloc(0) })
+      );
+      assert.strictEqual(
+        honoursOaepHash(certPem),
+        false,
+        "a polyfill accepts a bogus digest"
+      );
+      revert();
+      reset();
+
+      // An absent crypto module, as webpack's resolve.fallback produces.
+      reset = Crypto.__set__("nativeOaepHash", null);
+      const revertEmpty = Crypto.__set__("nodeCrypto", {});
+      assert.strictEqual(honoursOaepHash(certPem), false, "empty module");
+      revertEmpty();
+      reset();
+    });
+
+    it("wraps the content encryption key with RSA-OAEP-256, not SHA-1", () => {
+      const resp = crypto.encryptData({
+        data: JSON.stringify({ text: "message" }),
+      });
+      const encryptedKey = Buffer.from(
+        resp[testConfig.encryptedValueFieldName].split(".")[1],
+        "base64"
+      );
+      assert.strictEqual(unwrap(encryptedKey, "sha256").length, 32);
+      assert.throws(() => unwrap(encryptedKey, "sha1"));
     });
   });
 
