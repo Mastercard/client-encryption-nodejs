@@ -46,6 +46,16 @@ describe("Field Level Encryption", () => {
       assert.ok(!res.body.elem1.encryptedData.accountNumber);
     });
 
+    it("returns body untouched when toEncrypt is not defined", () => {
+      const config = JSON.parse(JSON.stringify(testConfig));
+      delete config.paths[0].toEncrypt;
+      const fle = new FieldLevelEncryption(config);
+      const body = { elem1: { encryptedData: { accountNumber: "5123456789012345" } } };
+      const res = encrypt.call(fle, "/resource", null, body);
+      assert.ok(res.header === null);
+      assert.ok(res.body === body);
+    });
+
     it("encrypt body payload with readme config", () => {
       const testConfigReadme = require("./mock/config-readme");
       const fle = new FieldLevelEncryption(testConfigReadme);
@@ -193,6 +203,15 @@ describe("Field Level Encryption", () => {
     it("decrypt response with no valid config", () => {
       const response = JSON.parse(JSON.stringify(require("./mock/response")));
       delete response.body.elem1;
+      const res = decrypt.call(fle, response);
+      assert.ok(res === response.body);
+    });
+
+    it("returns body untouched when toDecrypt is not defined", () => {
+      const config = JSON.parse(JSON.stringify(testConfig));
+      delete config.paths[0].toDecrypt;
+      const fle = new FieldLevelEncryption(config);
+      const response = JSON.parse(JSON.stringify(require("./mock/response")));
       const res = decrypt.call(fle, response);
       assert.ok(res === response.body);
     });
