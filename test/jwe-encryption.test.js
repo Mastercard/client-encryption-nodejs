@@ -38,6 +38,19 @@ describe("JWE Encryption", () => {
     });
   });
 
+  describe("#encrypt without toEncrypt", () => {
+    it("returns body untouched", () => {
+      const config = JSON.parse(JSON.stringify(testConfig));
+      delete config.paths[0].toEncrypt;
+      const encryption = new JweEncryption(config);
+      const encrypt = JweEncryption.__get__("encrypt");
+      const body = { elem1: { encryptedData: { accountNumber: "5123456789012345" } } };
+      const res = encrypt.call(encryption, "/resource", null, body);
+      assert.ok(res.header === null);
+      assert.ok(res.body === body);
+    });
+  });
+
   describe("#decrypt", () => {
     it("decrypt response", () => {
       const encryption = new JweEncryption(testConfig);
@@ -49,6 +62,16 @@ describe("JWE Encryption", () => {
       assert.ok(
         !Object.prototype.hasOwnProperty.call(res.foo, "encryptedData")
       );
+    });
+
+    it("returns body untouched when toDecrypt is not defined", () => {
+      const config = JSON.parse(JSON.stringify(testConfig));
+      delete config.paths[0].toDecrypt;
+      const encryption = new JweEncryption(config);
+      const decrypt = JweEncryption.__get__("decrypt");
+      const response = JSON.parse(JSON.stringify(require("./mock/jwe-response")));
+      const res = decrypt.call(encryption, response);
+      assert.ok(res === response.body);
     });
 
     it("decrypt first level element in response", () => {
